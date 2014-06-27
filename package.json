@@ -1,0 +1,27 @@
+{
+  "name": "homeclub-api",
+  "version": "0.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "",
+  "author": "",
+  "license": "BSD",
+  "dependencies": {
+    "async": "~0.7.0",
+    "body-parser": "~1.0.2",
+    "coffee-script": "~1.7.1",
+    "cookie-parser": "~1.0.1",
+    "express": "~4.0.0",
+    "express-session": "~1.0.3",
+    "follow-redirects": "0.0.3",
+    "lodash": "~2.4.1",
+    "mongoose": "~3.8.8",
+    "passport": "~0.2.0",
+    "passport-local": "~1.0.0",
+    "request": "~2.36.0",
+    "require-directory": "~1.2.0"
+  }
+}
