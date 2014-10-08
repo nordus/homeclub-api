@@ -1,3 +1,4 @@
 # Ignore npm files
 /node_modules
 .c9/
+app/**/*.js
