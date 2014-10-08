@@ -44,5 +44,7 @@ customerAccountSchema = new mongoose.Schema
     default : [1,2]
     type    : [Number]
 
+  mutedSensorCategories: {}
+
     
 mongoose.model 'CustomerAccount', customerAccountSchema

@@ -5,6 +5,15 @@ auth        = require('./auth')
 
 module.exports = (router, passport) ->
 
+  # WEB HOOKS
+  router.route('/webhooks/network-hub-event')
+    .post(c.webhooks.networkHubEvent)
+
+  router.route('/webhooks/sensor-hub-event')
+    .post(c.webhooks.sensorHubEvent)
+
+
+
   # CONSUMER
   router.route('/users/:id')
     .put(c.users.update)
