@@ -1,2 +1,3 @@
 # Ignore npm files
 /node_modules
+.c9/
