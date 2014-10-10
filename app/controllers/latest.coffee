@@ -36,14 +36,14 @@ exports.sensorHubEvents = (req, res) ->
       done()
   , (err) ->
     responses.forEach (response) ->
-      m = response.messages[0].message
-      tempInFahrenheit = ((m.sensorHubData1 * 9) / 5) + 32
-      eventData = {rssi:m.rssi, timestamp:m.timestamp,sensorHubData1:tempInFahrenheit,sensorHubRssi:m.sensorHubRssi, sensorHubBattery:m.sensorHubBattery}
-      if m.sensorHubType is 2
-        eventData.sensorHubData2 = m.sensorHubData2
-        eventData.sensorHubData3 = m.sensorHubData3
-        eventData.sensorHubBattery = m.sensorHubBattery
-      @[m.sensorHubMacAddress] = eventData
+      if m = response.messages[0]?.message
+        tempInFahrenheit = ((m.sensorHubData1 * 9) / 5) + 32
+        eventData = {rssi:m.rssi, timestamp:m.timestamp,sensorHubData1:tempInFahrenheit,sensorHubRssi:m.sensorHubRssi, sensorHubBattery:m.sensorHubBattery}
+        if m.sensorHubType is 2
+          eventData.sensorHubData2 = m.sensorHubData2
+          eventData.sensorHubData3 = m.sensorHubData3
+          eventData.sensorHubBattery = m.sensorHubBattery
+        @[m.sensorHubMacAddress] = eventData
     , out
 
     res.json out
