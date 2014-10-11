@@ -15,6 +15,9 @@ module.exports = (router, passport) ->
 
 
   # CONSUMER
+  router.route('/fieldhistograms')
+    .get(c.fieldhistograms)
+
   router.route('/users/:id')
     .put(c.users.update)
     .get(c.users.show)
