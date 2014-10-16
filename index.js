@@ -8,7 +8,10 @@ var express         = require('express'),
 
     app             = module.exports = express(),
     bodyParser      = require('body-parser'),
-    db              = require('./config/db');  // connect to our database
+    db              = require('./config/db'),  // connect to our database
+
+    envConfig       = require('./config/env-config'),
+    MongoStore      = require('connect-mongo')(session);
 
 var port    = process.env.PORT || 3000;
 console.log('port: ', port);
@@ -21,7 +24,12 @@ app.use(cookieParser());
 
 app.use(bodyParser());  // get information from html forms
 
-app.use(session({ secret:'s3ss10ns3cr3t' }));
+app.use(session({
+  secret  : 's3ss10ns3cr3t',
+  store   : new MongoStore({
+    url: envConfig.db
+  })
+}));
 
 app.use(passport.initialize());
 app.use(passport.session());  // persistent login sessions
