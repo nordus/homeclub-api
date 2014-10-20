@@ -52,6 +52,8 @@ module.exports = (router, passport) ->
   router.route('/me/customer-account')
     .get(auth.requiresApiLogin, c['me'].customerAccount)
 
+  router.route('/customer-accounts/:id')
+    .put(c['customer-accounts'].update)
 
 
   # CARRIER ADMIN
@@ -77,7 +79,6 @@ module.exports = (router, passport) ->
     .post(c.carriers.create)
 
   router.route('/customer-accounts/:id')
-    .put(c['customer-accounts'].update)
     .get(c['customer-accounts'].show)
     .delete(c['customer-accounts'].delete)
 
