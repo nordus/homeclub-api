@@ -68,7 +68,8 @@ userSchema.methods =
     crypto.pbkdf2Sync(password, salt, 10000, 64).toString 'base64'
 
   defaultReturnUrl: ->
-    return '/admin' if @roles.homeClubAdmin
+    return '/admin/carrier' if @roles.carrierAdmin
+    return '/admin/homeclub' if @roles.homeClubAdmin
     '/consumer'
 
 
