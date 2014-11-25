@@ -46,10 +46,5 @@ customerAccountSchema = new mongoose.Schema
 
   mutedSensorCategories: {}
 
-  # iOS device IDs
-  apnTokens: []
-  # Android device IDs
-  gcmTokens: []
-
     
 mongoose.model 'CustomerAccount', customerAccountSchema
