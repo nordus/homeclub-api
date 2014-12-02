@@ -15,6 +15,10 @@ module.exports = (router, passport) ->
 
 
   # CONSUMER
+  router.route('/login')
+    .post passport.authenticate('local'), (req, res) ->
+      res.redirect req.user.defaultReturnUrl()
+
   # ensure req.isAuthenticated for all routes below
   router.use auth.requiresApiLogin
 
@@ -24,10 +28,6 @@ module.exports = (router, passport) ->
   router.route('/users/:id')
     .put(c.users.update)
     .get(c.users.show)
-
-  router.route('/login')
-    .post passport.authenticate('local'), (req, res) ->
-      res.redirect req.user.defaultReturnUrl()
 
   router.route('/logout')
     .post (req, res) ->
