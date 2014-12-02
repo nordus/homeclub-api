@@ -17,7 +17,11 @@ exports.create = (req, res) ->
 
 
 exports.index = (req, res) ->
-  CustomerAccount.find {}, (e, accounts) ->
+  params = switch req.query.carrier
+    when undefined then {}
+    else carrier: db.Types.ObjectId(req.query.carrier)
+
+  CustomerAccount.find params, (e, accounts) ->
     res.json accounts
 
 
