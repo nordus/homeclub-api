@@ -4,7 +4,11 @@ whiteListedAttrs  = '-__v'
 
 
 exports.index = (req, res) ->
-  CarrierAdmin.find {}, (err, carriers) ->
+  params = switch req.query.carrier
+    when undefined then {}
+    else carrier: db.Types.ObjectId(req.query.carrier)
+
+  CarrierAdmin.find params, (err, carriers) ->
     res.json carriers
 
 
