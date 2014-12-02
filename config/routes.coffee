@@ -62,11 +62,32 @@ module.exports = (router, passport) ->
 
 
 
-  # HOMECLUB ADMIN
-  router.use auth.requiresRole('homeClubAdmin')
-
+  # BOTH (CARRIER ADMIN and HOMECLUB ADMIN)
   router.route('/aggregates')
     .get(c.aggregates)
+
+  router.route('/carrier-admins')
+    .get(c['carrier-admins'].index)
+
+  router.route('/carrier-admins/:id')
+    .get(c['carrier-admins'].show)
+    .delete(c['carrier-admins'].delete)
+
+  router.route('/customer-accounts')
+    .get(c['customer-accounts'].index)
+
+  router.route('/customer-accounts/:id')
+    .get(c['customer-accounts'].show)
+    .delete(c['customer-accounts'].delete)
+
+  router.route('/gateways/:id')
+    .get(c.gateways.show)
+    .post(c.gateways.create)
+    .put(c.gateways.update)
+
+
+  # HOMECLUB ADMIN
+  router.use auth.requiresRole('homeClubAdmin')
 
   router.route('/reset')
     .get(c.reset)
@@ -78,22 +99,8 @@ module.exports = (router, passport) ->
     .get(c.carriers.index)
     .post(c.carriers.create)
 
-  router.route('/customer-accounts/:id')
-    .get(c['customer-accounts'].show)
-    .delete(c['customer-accounts'].delete)
-
-  router.route('/customer-accounts')
-    .get(c['customer-accounts'].index)
-
   router.route('/users')
     .get(c.users.index)
-
-  router.route('/carrier-admins/:id')
-    .get(c['carrier-admins'].show)
-    .delete(c['carrier-admins'].delete)
-
-  router.route('/carrier-admins')
-    .get(c['carrier-admins'].index)
 
   router.route('/home-club-admins/:id')
     .get(c['home-club-admins'].show)
@@ -110,11 +117,6 @@ module.exports = (router, passport) ->
 
   router.route('/me/home-club-admin')
     .get(c['me'].homeClubAdmin)
-
-  router.route('/gateways/:id')
-    .get(c.gateways.show)
-    .post(c.gateways.create)
-    .put(c.gateways.update)
 
   router.route('/gateways')
     .get(c.gateways.index)

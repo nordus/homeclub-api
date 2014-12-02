@@ -12,5 +12,5 @@ exports.homeClubAdmin = (req, res) ->
 
 
 exports.carrierAdmin = (req, res) ->
-  CarrierAdmin.findOne(req.user.roles.carrierAdmin).populate('user').exec (e, carrierAdmin) ->
+  CarrierAdmin.findOne(req.user.roles.carrierAdmin).populate('user carrier').exec (e, carrierAdmin) ->
     res.json carrierAdmin
