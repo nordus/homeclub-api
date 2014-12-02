@@ -85,6 +85,9 @@ module.exports = (router, passport) ->
     .post(c.gateways.create)
     .put(c.gateways.update)
 
+  router.route('/stats')
+    .get(c.stats)
+
 
   # HOMECLUB ADMIN
   router.use auth.requiresRole('homeClubAdmin')
