@@ -15,6 +15,9 @@ module.exports = (router, passport) ->
 
 
   # CONSUMER
+  # ensure req.isAuthenticated for all routes below
+  router.use auth.requiresApiLogin
+
   router.route('/fieldhistograms')
     .get(c.fieldhistograms)
 
@@ -50,7 +53,7 @@ module.exports = (router, passport) ->
     .get(c['latest'].sensorHubEvents)
 
   router.route('/me/customer-account')
-    .get(auth.requiresApiLogin, c['me'].customerAccount)
+    .get(c['me'].customerAccount)
 
   router.route('/customer-accounts/:id')
     .put(c['customer-accounts'].update)
