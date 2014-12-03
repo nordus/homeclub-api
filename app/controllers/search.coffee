@@ -66,8 +66,8 @@ module.exports = (req, res) ->
         , (err, csv) ->
           res.attachment "raw_data_msg_type_#{req.query.msgType}.csv"
           res.send csv
-
-      res.json filtered
+      else
+        res.json filtered
 
     else
       res.json resp.messages
