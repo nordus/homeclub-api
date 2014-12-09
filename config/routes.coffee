@@ -67,6 +67,9 @@ module.exports = (router, passport) ->
 
 
   # BOTH (CARRIER ADMIN and HOMECLUB ADMIN)
+  router.route('/histograms/:carrier?')
+    .get(c.histograms)
+
   router.route('/aggregates')
     .get(c.aggregates)
 

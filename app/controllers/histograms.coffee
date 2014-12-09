@@ -1,45 +1,79 @@
 async   = require('async')
 request = require('request')
-{CustomerAccount} = require('../../config/db').models
+db      = require('../../config/db')
+{CustomerAccount} = db.models
 
 
-buildRequestOptions = (field, start, msgType) -> {
+buildRequestOptions = (sensorHubMacAddress, start, interval) -> {
 url: 'http://gateway.homeclub.us:12900/search/universal/keyword/histogram'
 json: true
 headers:
   Authorization: 'Basic YXBpdXNlcjpQYXNzdzByZCE='
 method: 'GET'
 qs:
-  field: field
-  query: "msgType:#{msgType}"
+  query: "sensorHubMacAddress:#{sensorHubMacAddress}"
+  interval: interval
   keyword: "#{start} to midnight tomorrow"
 }
 
-makeSingleRequest = (requestOptions, cb) ->
-  request requestOptions, (err, incomingMessage, resp) ->
-    cb(null, resp)
+formatResponse = (resp, sensorHubMacAddress) ->
+  formattedChartData = for k,v of resp.results
+    x:parseInt(k), y:v
+  hasAllDataPoints = Object.keys(resp.results).length >= 12
+  color = if hasAllDataPoints then '#53b2da' else '#f2dede'
+  [
+    data: formattedChartData
+    name: sensorHubMacAddress
+    color: color
+  ]
 
 
 module.exports = (req, res) ->
-  start                 = req.query.start
-  msgType               = req.query.msgType or 5
+  start                 = req.query.start or '1 week ago'
+  interval              = req.query.interval or 'hour'
 
-  params = switch req.query.carrier
+  params = switch req.params.carrier
     when undefined then {}
-    else carrier: db.Types.ObjectId(req.query.carrier)
+    else carrier: db.Types.ObjectId(req.params.carrier)
 
   CustomerAccount.find(params).populate('gateways').exec (err, accounts) ->
-    res.json accounts
-#  requestOptionsArr = []
-#
-#  fields = req.query.fields
-#
-#  fields.forEach (field) ->
-#    requestOptionsArr.push buildRequestOptions(field, start, msgType)
-#
-#  async.map requestOptionsArr, makeSingleRequest, (err, responses) ->
-#    out = {}
-#    fields.forEach (field, n) ->
-#      filtered = _.omit responses[n], 'built_query'
-#      out[field] = filtered
-#    res.json out
+
+    allSensorHubMacAddresses  = []
+    nameBySensorHubMacAddress = {}
+
+    accounts.forEach (account) ->
+      g = account.gateways[0]
+      # return if account has no gateways assigned
+      return unless g
+      customerName = "#{account.name.first} #{account.name.last}"
+      # name contains network hub ID, firstName lastName, customer ID as a
+      # pipe ('|') delimited string
+      # i.e. '000780677246|John Doe|53a8ad2ed7babc9210c6c7ce'
+      name = [
+        g._id
+        customerName
+        account._id
+      ].join '|'
+      g.sensorHubs.forEach (sensorHubMacAddress) ->
+        # sensorHubs on the same gateway have the same name
+        nameBySensorHubMacAddress[sensorHubMacAddress] = name
+        allSensorHubMacAddresses.push sensorHubMacAddress
+
+
+    out = {}
+
+    async.each allSensorHubMacAddresses, (sensorHubMacAddress, done) ->
+
+      name = nameBySensorHubMacAddress[sensorHubMacAddress]
+
+      unless out[name]
+        out[name] = {}
+
+      requestOptions = buildRequestOptions(sensorHubMacAddress, start, interval)
+
+      request requestOptions, (err, incomingMessage, resp) ->
+        formattedResponse = formatResponse(resp, sensorHubMacAddress)
+        out[name][sensorHubMacAddress] = formattedResponse
+        done()
+    , (err) ->
+      res.json out
