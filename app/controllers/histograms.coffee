@@ -29,7 +29,7 @@ formatResponse = (resp, sensorHubMacAddress) ->
 
 
 module.exports = (req, res) ->
-  start                 = req.query.start or '1 week ago'
+  start                 = req.query.start or '12 hours ago'
   interval              = req.query.interval or 'hour'
 
   params = switch req.params.carrier
