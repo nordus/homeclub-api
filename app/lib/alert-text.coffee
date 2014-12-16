@@ -19,5 +19,5 @@ exports.gatewayEvent = (gatewayEventCode) ->
     when 2 then 'Going from backup battery to line power'
     when 3 then 'Transition from high to low battery voltage'
     when 4 then 'Transition from low to critical low battery voltage'
-    when 5 then 'Going from shipping/dead to power on (SDG connected to line power)'
+    when 5 then 'Welcome to HomeClub.  Your system is now operational.'
     when 6 then 'Heartbeat'
