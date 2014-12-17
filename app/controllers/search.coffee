@@ -32,7 +32,7 @@ module.exports = (req, res) ->
     qs: queryParams
     json: true
     headers:
-      Authorization: 'Basic YXBpdXNlcjpQYXNzdzByZCE='
+      Authorization: 'Basic YXBpdXNlcjphcGl1c2Vy'
       
     method: 'GET'
 

@@ -8,7 +8,7 @@ buildRequestOptions = (sensorHubMacAddress, start, interval) -> {
 url: 'http://gateway.homeclub.us:12900/search/universal/keyword/histogram'
 json: true
 headers:
-  Authorization: 'Basic YXBpdXNlcjpQYXNzdzByZCE='
+  Authorization: 'Basic YXBpdXNlcjphcGl1c2Vy'
 method: 'GET'
 qs:
   query: "sensorHubMacAddress:#{sensorHubMacAddress}"

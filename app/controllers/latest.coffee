@@ -16,7 +16,7 @@ buildRequestOptions = (sensorHubMacAddress, msgType = 5, start = '30 days ago') 
     url: "http://gateway.homeclub.us:12900/search/universal/keyword?#{queryStr}"
     json: true
     headers:
-      Authorization: 'Basic YXBpdXNlcjpQYXNzdzByZCE='
+      Authorization: 'Basic YXBpdXNlcjphcGl1c2Vy'
       
     method: 'GET'
 
