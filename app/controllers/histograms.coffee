@@ -17,9 +17,11 @@ qs:
 }
 
 formatResponse = (resp, sensorHubMacAddress) ->
-  formattedChartData = for k,v of resp.results
-    x:parseInt(k), y:v
-  hasAllDataPoints = Object.keys(resp.results).length >= 12
+  formattedChartData = []
+  if resp.results
+    formattedChartData = for k,v of resp.results
+      x:parseInt(k), y:v
+  hasAllDataPoints = formattedChartData.length >= 12
   color = if hasAllDataPoints then '#53b2da' else '#f2dede'
   [
     data: formattedChartData
