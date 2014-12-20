@@ -8,6 +8,7 @@ exports.sensorHubEvent = (sensorHubEvent, eventResolved) ->
     when 6 then 'High humidity'
     when 7 then 'Low light'
     when 8 then 'High light'
+    when 9 then 'Movement'
   if eventResolved
     alertText += ' resolved'
   alertText
