@@ -21,4 +21,4 @@ exports.gatewayEvent = (gatewayEventCode) ->
     when 3 then 'Transition from high to low battery voltage'
     when 4 then 'Transition from low to critical low battery voltage'
     when 5 then 'Welcome to HomeClub.  Your system is now operational.'
-    when 6 then 'Heartbeat'
+    when 6 then 'Restart'
