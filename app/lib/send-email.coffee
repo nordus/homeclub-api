@@ -6,11 +6,12 @@ server = email.server.connect
   host: 'smtp.mandrillapp.com'
   ssl: true
 
-module.exports = (recipientEmail, body, cb) ->
+module.exports = (options, cb) ->
+  {recipientEmail, subject, body} = options
   # send the message and get a callback with an error or details of the message that was sent
   server.send
     text: body
     from: 'HomeClub Alert <alert@homeclub.us>'
     to: recipientEmail
-    subject: ''
+    subject: subject || ''
   , cb

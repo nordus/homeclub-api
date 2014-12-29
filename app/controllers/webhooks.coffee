@@ -21,7 +21,7 @@ exports.networkHubEvent = (req, res) ->
       email = r.accountToEmail.user.email
       body = alertText.gatewayEvent(req.body.gatewayEventCode)
 
-      sendEmail email, body, (err, message) ->
+      sendEmail {recipientEmail:email, subject:'Network Hub Alert', body}, (err, message) ->
         if err
           console.log '[sendEmail] ERROR:'
           console.log err
@@ -100,7 +100,7 @@ exports.sensorHubEvent = (req, res) ->
         email = r.accountToEmail.user.email
         body = alertText.sensorHubEvent(sensorHubEvent, eventResolved)
   
-        sendEmail email, body, (err, message) ->
+        sendEmail {recipientEmail:email, subject:'Sensor Alert', body}, (err, message) ->
           if err
             console.log '[sendEmail] ERROR:'
             console.log err
