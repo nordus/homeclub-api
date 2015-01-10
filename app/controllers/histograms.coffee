@@ -4,17 +4,22 @@ db      = require('../../config/db')
 {CustomerAccount} = db.models
 
 
-buildRequestOptions = (sensorHubMacAddress, start, interval) -> {
-url: 'http://gateway.homeclub.us:12900/search/universal/keyword/histogram'
-json: true
-headers:
-  Authorization: 'Basic YXBpdXNlcjphcGl1c2Vy'
-method: 'GET'
-qs:
-  query: "sensorHubMacAddress:#{sensorHubMacAddress}"
-  interval: interval
-  keyword: "#{start} to midnight tomorrow"
-}
+buildRequestOptions = (macAddressObj, start, interval) ->
+  query = switch macAddressObj.hubType
+    when 'sensorHub' then "sensorHubMacAddress:#{macAddressObj.macAddress}"
+    else "macAddress:#{macAddressObj.macAddress} AND msgType:2"
+
+  {
+    url: 'http://gateway.homeclub.us:12900/search/universal/keyword/histogram'
+    json: true
+    headers:
+      Authorization: 'Basic YXBpdXNlcjphcGl1c2Vy'
+    method: 'GET'
+    qs:
+      query: query
+      interval: interval
+      keyword: "#{start} to midnight tomorrow"
+  }
 
 formatResponse = (resp, sensorHubMacAddress) ->
   formattedChartData = []
@@ -40,7 +45,7 @@ module.exports = (req, res) ->
 
   CustomerAccount.find(params).populate('gateways').exec (err, accounts) ->
 
-    allSensorHubMacAddresses  = []
+    allMacAddresses  = []
     nameBySensorHubMacAddress = {}
 
     accounts.forEach (account) ->
@@ -51,31 +56,34 @@ module.exports = (req, res) ->
       # name contains network hub ID, firstName lastName, customer ID as a
       # pipe ('|') delimited string
       # i.e. '000780677246|John Doe|53a8ad2ed7babc9210c6c7ce'
+      networkHubMacAddress = g._id
       name = [
-        g._id
+        networkHubMacAddress
         customerName
         account._id
       ].join '|'
+      nameBySensorHubMacAddress[networkHubMacAddress] = name
+      allMacAddresses.push { hubType:'networkHub', macAddress:g._id }
       g.sensorHubs.forEach (sensorHubMacAddress) ->
         # sensorHubs on the same gateway have the same name
         nameBySensorHubMacAddress[sensorHubMacAddress] = name
-        allSensorHubMacAddresses.push sensorHubMacAddress
+        allMacAddresses.push { hubType:'sensorHub', macAddress:sensorHubMacAddress }
 
 
     out = {}
 
-    async.each allSensorHubMacAddresses, (sensorHubMacAddress, done) ->
-
-      name = nameBySensorHubMacAddress[sensorHubMacAddress]
+    async.each allMacAddresses, (macAddressObj, done) ->
+      sensorHubMacAddress = macAddressObj.macAddress
+      name                = nameBySensorHubMacAddress[sensorHubMacAddress]
 
       unless out[name]
-        out[name] = {}
+        out[name] = { networkHubs:{}, sensorHubs:{} }
 
-      requestOptions = buildRequestOptions(sensorHubMacAddress, start, interval)
+      requestOptions = buildRequestOptions(macAddressObj, start, interval)
 
       request requestOptions, (err, incomingMessage, resp) ->
         formattedResponse = formatResponse(resp, sensorHubMacAddress)
-        out[name][sensorHubMacAddress] = formattedResponse
+        out[name]["#{macAddressObj.hubType}s"][sensorHubMacAddress] = formattedResponse
         done()
     , (err) ->
       res.json out
