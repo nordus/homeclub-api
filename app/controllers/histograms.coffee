@@ -7,7 +7,7 @@ db      = require('../../config/db')
 buildRequestOptions = (macAddressObj, start, interval) ->
   query = switch macAddressObj.hubType
     when 'sensorHub' then "sensorHubMacAddress:#{macAddressObj.macAddress}"
-    else "macAddress:#{macAddressObj.macAddress} AND msgType:2"
+    else "macAddress:#{macAddressObj.macAddress} AND msgType:0"
 
   {
     url: 'http://gateway.homeclub.us:12900/search/universal/keyword/histogram'
