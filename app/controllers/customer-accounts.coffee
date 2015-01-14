@@ -21,7 +21,10 @@ exports.index = (req, res) ->
     when undefined then {}
     else carrier: db.Types.ObjectId(req.query.carrier)
 
-  CustomerAccount.find params, (e, accounts) ->
+  # select all attributes by default
+  attrsToSelect = req.query.select || ''
+
+  CustomerAccount.find params, attrsToSelect, (e, accounts) ->
     res.json accounts
 
 
