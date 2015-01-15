@@ -7,7 +7,12 @@ whiteListedAttrs = '-__v'
 
 
 exports.index = (req, res) ->
-  SensorHub.where('_id').in(req.query.sensorHubMacAddresses).exec (e, sensorHubs) ->
+  params = switch req.query.sensorHubMacAddresses
+    when undefined then {}
+    else _id:
+      $in:req.query.sensorHubMacAddresses
+
+  SensorHub.find params, (e, sensorHubs) ->
     res.json sensorHubs
 
 
