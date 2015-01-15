@@ -91,6 +91,7 @@ module.exports = (router, passport) ->
     .get(c.gateways.show)
     .post(c.gateways.create)
     .put(c.gateways.update)
+    .delete(c.gateways.delete)
 
   router.route('/stats')
     .get(c.stats)

@@ -25,3 +25,9 @@ exports.update = (req, res) ->
     $set: req.body
   , (err, gateway) ->
     res.json gateway
+
+
+exports.delete = (req, res) ->
+  Gateway.findByIdAndRemove req.params.id, (err, gateway) ->
+    return res.json(err)  if err
+    res.json gateway
