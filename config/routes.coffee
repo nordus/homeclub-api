@@ -75,6 +75,7 @@ module.exports = (router, passport) ->
 
   router.route('/carrier-admins')
     .get(c['carrier-admins'].index)
+    .post(c['carrier-admins'].create)
 
   router.route('/carrier-admins/:id')
     .get(c['carrier-admins'].show)
