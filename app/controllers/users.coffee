@@ -13,7 +13,7 @@ exports.index = (req, res) ->
 exports.update = (req, res) ->
 
   # ensure non-admin can only update their own account
-  notAdmin = !req.user.roles('homeClubAdmin') && !req.user.roles('carrierAdmin')
+  notAdmin = !req.user.roles.homeClubAdmin && !req.user.roles.carrierAdmin
 
   if req.user._id != req.body._id && notAdmin
     req.status 403
