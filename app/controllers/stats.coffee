@@ -5,7 +5,7 @@ _ = require('lodash')
 
 
 buildRequestOptions = (field, start, msgType) -> {
-url: 'http://gateway.homeclub.us:12900/search/universal/keyword/stats'
+url: 'http://graylog-server.homeclub.us:12900/search/universal/keyword/stats'
 json: true
 headers:
   Authorization: 'Basic YXBpdXNlcjphcGl1c2Vy'

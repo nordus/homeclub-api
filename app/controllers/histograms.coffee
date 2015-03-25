@@ -10,7 +10,7 @@ buildRequestOptions = (macAddressObj, start, interval) ->
     else "macAddress:#{macAddressObj.macAddress} AND msgType:0"
 
   {
-    url: 'http://gateway.homeclub.us:12900/search/universal/keyword/histogram'
+    url: 'http://graylog-server.homeclub.us:12900/search/universal/keyword/histogram'
     json: true
     headers:
       Authorization: 'Basic YXBpdXNlcjphcGl1c2Vy'

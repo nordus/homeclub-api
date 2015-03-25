@@ -13,7 +13,7 @@ buildRequestOptions = (sensorHubMacAddress, msgType = 5, start = '30 days ago') 
   queryStr = querystring.stringify(queryParams)
 
   requestOptions =
-    url: "http://gateway.homeclub.us:12900/search/universal/keyword?#{queryStr}"
+    url: "http://graylog-server.homeclub.us:12900/search/universal/keyword?#{queryStr}"
     json: true
     headers:
       Authorization: 'Basic YXBpdXNlcjphcGl1c2Vy'
@@ -36,7 +36,7 @@ exports.sensorHubEvents = (req, res) ->
       done()
   , (err) ->
     responses.forEach (response) ->
-      if m = response.messages[0]?.message
+      if m = response.messages?[0].message
         tempInFahrenheit = ((m.sensorHubData1 * 9) / 5) + 32
         eventData = {rssi:m.rssi, timestamp:m.timestamp,sensorHubData1:tempInFahrenheit,sensorHubRssi:m.sensorHubRssi, sensorHubBattery:m.sensorHubBattery}
         if m.sensorHubType is 2
