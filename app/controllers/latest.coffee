@@ -36,7 +36,7 @@ exports.sensorHubEvents = (req, res) ->
       done()
   , (err) ->
     responses.forEach (response) ->
-      if m = response.messages?[0].message
+      if m = response.messages[0]?.message
         tempInFahrenheit = ((m.sensorHubData1 * 9) / 5) + 32
         eventData = {rssi:m.rssi, timestamp:m.timestamp,sensorHubData1:tempInFahrenheit,sensorHubRssi:m.sensorHubRssi, sensorHubBattery:m.sensorHubBattery}
         if m.sensorHubType is 2
