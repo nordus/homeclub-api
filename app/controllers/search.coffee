@@ -27,7 +27,7 @@ module.exports = (req, res) ->
     queryParams.offset = req.query.offset
 
   requestOptions =
-    url: "http://gateway.homeclub.us:12900/search/universal/keyword"
+    url: "http://graylog-server.homeclub.us:12900/search/universal/keyword"
     qs: queryParams
     headers:
       Authorization: 'Basic YXBpdXNlcjphcGl1c2Vy'
@@ -42,4 +42,4 @@ module.exports = (req, res) ->
   else
     requestOptions.json = true
     request requestOptions, (err, incomingMessage, resp) ->
-      res.json _.pluck(resp.messages, 'message')
+        res.json _.pluck(resp.messages, 'message')
