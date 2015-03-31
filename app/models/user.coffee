@@ -27,6 +27,9 @@ userSchema = new mongoose.Schema
   hashedPassword  : String
   salt            : String
   tos             : Boolean
+  isDebugTester:
+    default : false
+    type    : Boolean
 
 
 capitalize = (str) ->
