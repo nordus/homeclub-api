@@ -20,4 +20,15 @@ sensorHubSchema = new mongoose.Schema
     ref   : 'SensorHubType'
     type  : Number
 
+  emailSubscriptions:
+    default : ['water']
+    type    : [String]
+
+  smsSubscriptions:
+    default : ['water', 'motion']
+    type    : [String]
+
+  customThresholds  : {}
+  pendingCommands   : {}
+
 mongoose.model 'SensorHub', sensorHubSchema

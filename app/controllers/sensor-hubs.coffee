@@ -19,6 +19,10 @@ exports.index = (req, res) ->
 exports.update = (req, res) ->
   delete req.body._id
 
+  if req.body.customThresholds
+    req.body.pendingCommands = req.body.customThresholds
+    delete req.body.customThresholds
+
   SensorHub.findOneAndUpdate
     _id: req.params.id
   ,
