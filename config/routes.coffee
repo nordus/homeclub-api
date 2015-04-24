@@ -19,6 +19,11 @@ module.exports = (router, passport) ->
     .post(c.webhooks.smsInitiatedOutcome)
 
 
+  # SMS
+  router.route('/sms')
+    .post(c.sms)
+
+
 
   # CONSUMER
   router.route('/login')
