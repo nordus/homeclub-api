@@ -5,6 +5,68 @@ sendSms = require('../lib/send-sms')
 sendEmail = require('../lib/send-email')
 
 
+# msgType1 - ACK from SMS
+exports.smsInitiatedAck = (req, res) ->
+
+  sensorHubSystemMessages =
+    '0'   : ''
+    '1'   : 'updateSuccess'
+    '2'   : ''
+    '3'   : ''
+    '4'   : ''
+    '5'   : ''
+    '6'   : ''
+    '7'   : ''
+    '8'   : ''
+    '9'   : ''
+    '10'  : ''
+
+  sensorHubSystemMessage = sensorHubSystemMessages[+req.sensorHubSystemMessage]
+
+  if sensorHubSystemMessage is 'updateSuccess'
+    SensorHub.findOne { _id:req.body.sensorHubMacAddress }, (err, sensorHub) ->
+      sensorHub.latestOutboundSms.deliveredAt = Date.now()
+      sensorHub.save (e, r) ->
+        res.json r
+
+  else
+    res.json req.body
+
+
+# msgType1 - outcome of HC2
+exports.smsInitiatedOutcome = (req, res) ->
+
+  networkHubSystemMessages =
+    '0'   : ''
+    '1'   : 'smsSuccess'
+    '2'   : ''
+    '3'   : ''
+    '4'   : ''
+    '5'   : ''
+    '6'   : ''
+    '7'   : ''
+    '8'   : ''
+    '9'   : ''
+    '10'  : 'fail'
+
+  networkHubSystemMessage = networkHubSystemMessages[+req.networkHubSystemMessage]
+
+  if networkHubSystemMessage is 'smsSuccess'
+    SensorHub.findOne { _id:req.body.sensorHubMacAddress }, (err, sensorHub) ->
+
+      # store customThresholds if update success
+      sensorHub.customThresholds = sensorHub.pendingCommands
+
+      # delete latestOutboundSms and pendingCommands (success or fail)
+      sensorHub.pendingCommands = undefined
+      sensorHub.latestOutboundSms = undefined
+      sensorHub.save (e, r) ->
+        res.json r
+
+  else
+    res.json req.body
+
+
 exports.networkHubEvent = (req, res) ->
   # find account with networkHubEvent number in email/SMS subscriptions array
   async.parallel

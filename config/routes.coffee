@@ -12,6 +12,12 @@ module.exports = (router, passport) ->
   router.route('/webhooks/sensor-hub-event')
     .post(c.webhooks.sensorHubEvent)
 
+  router.route('/webhooks/sms-initiated-ack')
+    .post(c.webhooks.smsInitiatedAck)
+
+  router.route('/webhooks/sms-initiated-outcome')
+    .post(c.webhooks.smsInitiatedOutcome)
+
 
 
   # CONSUMER
