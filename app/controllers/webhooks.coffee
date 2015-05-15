@@ -24,7 +24,7 @@ exports.smsInitiatedAck = (req, res) ->
   if status is 'success'
 
     # find most recent outboundCommand by network hub MAC
-    OutboundCommand.where (gateway:req.body.macAddress ).sort( '-_id' ).limit( 1 ).exec ( err, oc ) ->
+    OutboundCommand.where( gateway:req.body.macAddress ).sort( '-_id' ).limit( 1 ).exec ( err, oc ) ->
 
       # set deliveredAt
       oc.deliveredAt = Date.now()
