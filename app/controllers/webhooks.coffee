@@ -1,4 +1,4 @@
-{CustomerAccount, OutboundEmail, OutboundSms, SensorHub} = require('../../config/db').models
+{CustomerAccount, OutboundCommand, OutboundEmail, OutboundSms, SensorHub} = require('../../config/db').models
 
 alertText = require('../lib/alert-text')
 async     = require('async')
