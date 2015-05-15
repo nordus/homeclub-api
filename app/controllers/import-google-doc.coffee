@@ -15,7 +15,7 @@ getSpreadsheet = (spreadsheetKey, cb) ->
 
 
 exports.preview = (req, res) ->
-  spreadsheetKey = req.body.url.match(/key=([a-z|A-Z|0-9]*)/).pop()
+  spreadsheetKey = req.body.spreadsheetKey
 
   getSpreadsheet spreadsheetKey, (accounts) ->
     emails = accounts.map (account) ->

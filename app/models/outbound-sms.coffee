@@ -15,4 +15,10 @@ outboundSmsSchema = new mongoose.Schema
   reading: {}
 
 
+outboundSmsSchema.virtual('created').get ->
+  @created = @_id.getTimestamp()
+
+outboundSmsSchema.set 'toJSON', virtuals:true
+
+
 mongoose.model 'OutboundSms', outboundSmsSchema

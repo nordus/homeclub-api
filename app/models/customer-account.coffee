@@ -30,6 +30,7 @@ customerAccountSchema = new mongoose.Schema
 
   # Array of sensorHubEventStart/sensorHubEventEnd that customerAccount wants to be emailed about
   # [1,6]  => wants to be notified about water detect and high temperature
+  # TODO - [DRJ] remove sensorHubEventEmailSubscriptions and sensorHubEventSmsSubscriptions from customerAccount
   sensorHubEventEmailSubscriptions:
     default : [1]
     type    : [Number]
@@ -44,7 +45,7 @@ customerAccountSchema = new mongoose.Schema
     default : [1,2]
     type    : [Number]
 
-  mutedSensorCategories: {}
+#  mutedSensorCategories: {}
 
     
 mongoose.model 'CustomerAccount', customerAccountSchema

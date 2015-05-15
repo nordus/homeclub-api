@@ -1,70 +1,64 @@
 {CustomerAccount, OutboundEmail, OutboundSms, SensorHub} = require('../../config/db').models
+
 alertText = require('../lib/alert-text')
-async = require('async')
-sendSms = require('../lib/send-sms')
+async     = require('async')
+sendSms   = require('../lib/send-sms')
 sendEmail = require('../lib/send-email')
 
 
-# msgType1 - ACK from SMS
+
 exports.smsInitiatedAck = (req, res) ->
 
-  sensorHubSystemMessages =
-    '0'   : ''
-    '1'   : 'updateSuccess'
-    '2'   : ''
-    '3'   : ''
-    '4'   : ''
-    '5'   : ''
-    '6'   : ''
-    '7'   : ''
-    '8'   : ''
-    '9'   : ''
-    '10'  : ''
+  # TESTING
+  console.log 'smsInitiatedAck'
+  console.log 'request:'
+  console.log req.body
 
-  sensorHubSystemMessage = sensorHubSystemMessages[+req.sensorHubSystemMessage]
-
-  if sensorHubSystemMessage is 'updateSuccess'
-    SensorHub.findOne { _id:req.body.sensorHubMacAddress }, (err, sensorHub) ->
-      sensorHub.latestOutboundSms.deliveredAt = Date.now()
-      sensorHub.save (e, r) ->
-        res.json r
-
-  else
-    res.json req.body
-
-
-# msgType1 - outcome of HC2
-exports.smsInitiatedOutcome = (req, res) ->
 
   networkHubSystemMessages =
-    '0'   : ''
-    '1'   : 'smsSuccess'
-    '2'   : ''
-    '3'   : ''
-    '4'   : ''
-    '5'   : ''
-    '6'   : ''
-    '7'   : ''
-    '8'   : ''
-    '9'   : ''
+    '1'   : 'success'
     '10'  : 'fail'
 
-  networkHubSystemMessage = networkHubSystemMessages[+req.networkHubSystemMessage]
+  status = networkHubSystemMessages[req.body.networkHubSystemMessage]
 
-  if networkHubSystemMessage is 'smsSuccess'
-    SensorHub.findOne { _id:req.body.sensorHubMacAddress }, (err, sensorHub) ->
+  if status is 'success'
 
-      # store customThresholds if update success
-      sensorHub.customThresholds = sensorHub.pendingCommands
+    # find most recent outboundCommand by network hub MAC
+    OutboundCommand.where (gateway:req.body.macAddress ).sort( '-_id' ).limit( 1 ).exec ( err, oc ) ->
 
-      # delete latestOutboundSms and pendingCommands (success or fail)
-      sensorHub.pendingCommands = undefined
-      sensorHub.latestOutboundSms = undefined
-      sensorHub.save (e, r) ->
-        res.json r
+      # set deliveredAt
+      oc.deliveredAt = Date.now()
 
-  else
-    res.json req.body
+      oc.save (e) ->
+        res.json e || oc
+
+
+
+exports.smsInitiatedOutcome = (req, res) ->
+
+  # TESTING
+  console.log 'smsInitiatedOutcome'
+  console.log 'request:'
+  console.log req.body
+
+  sensorHubSystemMessages =
+    '1'   : 'success'
+    '10'  : 'fail'
+
+  status = sensorHubSystemMessages[req.body.sensorHubSystemMessage]
+
+  if status is 'success'
+
+    # find sensor hub by MAC address
+    SensorHub.findById req.body.payload1, ( err, sensorHub ) ->
+
+      sensorHub.deviceThresholds        = sensorHub.pendingDeviceThresholds
+      sensorHub.pendingDeviceThresholds = undefined
+#      sensorHub.latestOutboundCommand   = undefined
+
+      sensorHub.save (e) ->
+        res.json e || sensorHub
+
 
 
 exports.networkHubEvent = (req, res) ->

@@ -20,6 +20,8 @@ gatewaySchema = new mongoose.Schema
   sensorHubs: [
     ref: 'SensorHub', type: String
   ]
+
+  phone: String
     
     
 mongoose.model 'Gateway', gatewaySchema

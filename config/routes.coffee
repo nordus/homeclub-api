@@ -126,6 +126,15 @@ module.exports = (router, passport) ->
   router.route('/users')
     .get(c.users.index)
 
+  router.route('/outbound-sms')
+    .get(c['outbound-sms'].index)
+
+  router.route('/hc1')
+    .post(c.hc1)
+
+  router.route('/outbound-commands')
+    .get(c['outbound-commands'].index)
+
   router.route('/home-club-admins/:id')
     .get(c['home-club-admins'].show)
     .delete(c['home-club-admins'].delete)

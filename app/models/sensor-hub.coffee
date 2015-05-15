@@ -28,7 +28,18 @@ sensorHubSchema = new mongoose.Schema
     default : ['water', 'motion']
     type    : [String]
 
-  customThresholds  : {}
-  pendingCommands   : {}
+#  customThresholds  : {}
+
+  latestOutboundCommand:
+    ref: 'OutboundCommand'
+    type: mongoose.Schema.Types.ObjectId
+
+  deviceThresholds:
+    ref     : 'DeviceThresholds'
+    type    : mongoose.Schema.Types.ObjectId
+
+  pendingDeviceThresholds:
+    ref     : 'DeviceThresholds'
+    type    : mongoose.Schema.Types.ObjectId
 
 mongoose.model 'SensorHub', sensorHubSchema
