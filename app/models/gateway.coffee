@@ -22,6 +22,10 @@ gatewaySchema = new mongoose.Schema
   ]
 
   phone: String
+
+  pendingOutboundCommand:
+    ref: 'OutboundCommand'
+    type: mongoose.Schema.Types.ObjectId
     
     
 mongoose.model 'Gateway', gatewaySchema

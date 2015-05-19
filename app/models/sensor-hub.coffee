@@ -30,9 +30,9 @@ sensorHubSchema = new mongoose.Schema
 
 #  customThresholds  : {}
 
-  latestOutboundCommand:
-    ref: 'OutboundCommand'
-    type: mongoose.Schema.Types.ObjectId
+#  latestOutboundCommand:
+#    ref: 'OutboundCommand'
+#    type: mongoose.Schema.Types.ObjectId
 
   deviceThresholds:
     ref     : 'DeviceThresholds'
