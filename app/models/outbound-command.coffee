@@ -6,6 +6,10 @@ outboundCommandSchema = new mongoose.Schema
     ref   : 'Gateway'
     type  : String
 
+  sensorHub:
+    ref   : 'SensorHub'
+    type  : String
+
   customerAccount:
     ref   : 'CustomerAccount'
     type  : mongoose.Schema.Types.ObjectId
