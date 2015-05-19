@@ -22,6 +22,8 @@ outboundCommandSchema = new mongoose.Schema
 
   sentAt                : Date
 
+  resolvedAt            : Date
+
   smsTransactionDetails : {}
 
   params                : {}
