@@ -16,21 +16,35 @@ exports.smsInitiatedAck = (req, res) ->
 
 
   networkHubSystemMessages =
-    '1'   : 'success'
-    '10'  : 'fail'
+    '1'   : 'smsSuccess'
+    '10'  : 'smsFail'
 
   status = networkHubSystemMessages[req.body.networkHubSystemMessage]
 
-  if status is 'success'
+  if status is 'smsSuccess'
 
     # find most recent outboundCommand by network hub MAC
-    OutboundCommand.where( gateway:req.body.macAddress ).sort( '-_id' ).limit( 1 ).exec ( err, docs ) ->
-
-      oc = docs[0]
+    OutboundCommand.findOne( gateway:req.body.macAddress ).populate('gateway').exec ( err, oc ) ->
 
       # set deliveredAt
       oc.deliveredAt = Date.now()
 
+      # if HC1 remove pendingOutboundCommand
+      if oc.msgType is 'HC1'
+
+        oc.resolvedAt = Date.now()
+
+        oc.gateway.pendingOutboundCommand = undefined
+        oc.gateway.save (err) ->
+          if err
+            console.log err
+          else
+            console.log '.. gateway.pendingOutboundCommand updated:'
+            console.log oc.gateway
+
+      # TESTING
+      console.log 'outboundCommand before save:'
+      console.log oc
       oc.save (e) ->
         res.json e || oc
 
@@ -44,22 +58,38 @@ exports.smsInitiatedOutcome = (req, res) ->
   console.log req.body
 
   sensorHubSystemMessages =
-    '1'   : 'success'
-    '10'  : 'fail'
+    '1'   : 'updateSuccess'
+    '10'  : 'updateFail'
 
   status = sensorHubSystemMessages[req.body.sensorHubSystemMessage]
 
-  if status is 'success'
+  if status is 'updateSuccess'
 
     # find sensor hub by MAC address
-    SensorHub.findById req.body.payload1, ( err, sensorHub ) ->
+    # SensorHub.findById req.body.payload1, ( err, sensorHub ) ->
+    OutboundCommand.findOne( gateway:req.body.macAddress ).populate('gateway sensorHub').exec ( err, oc ) ->
 
-      sensorHub.deviceThresholds        = sensorHub.pendingDeviceThresholds
-      sensorHub.pendingDeviceThresholds = undefined
-#      sensorHub.latestOutboundCommand   = undefined
+      oc.resolvedAt = Date.now()
 
-      sensorHub.save (e) ->
-        res.json e || sensorHub
+      oc.sensorHub.deviceThresholds         = oc.sensorHub.pendingDeviceThresholds
+      oc.sensorHub.pendingDeviceThresholds  = undefined
+      oc.sensorHub.save (err) ->
+        if err
+          console.log err
+        else
+          console.log '.. sensorHub.deviceThresholds updated:'
+          console.log oc.sensorHub
+
+      oc.gateway.pendingOutboundCommand     = undefined
+      oc.gateway.save (err) ->
+        if err
+          console.log err
+        else
+          console.log '.. gateway.pendingOutboundCommand updated:'
+          console.log oc.gateway
+
+      oc.save (e) ->
+        res.json e || oc
 
 
 
