@@ -13,7 +13,6 @@ exports.index = (req, res) ->
     else _id:
       $in:req.query.sensorHubMacAddresses
 
-#  SensorHub.find params, (e, sensorHubs) ->
   SensorHub.find(params).exec (e, sensorHubs) ->
     res.json sensorHubs
 

@@ -31,11 +31,5 @@ module.exports = ( req, res ) ->
             gateway.pendingOutboundCommand = outboundCommand
 
             gateway.save ( e ) ->
-              if e
-                console.log '.. gateway.save ERROR:'
-                console.log e
-              else
-                console.log '.. gateway.pendingOutboundCommand set!'
-                console.log gateway
 
     res.json { ooga:'booga' }
