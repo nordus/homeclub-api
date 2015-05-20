@@ -24,7 +24,7 @@ exports.smsInitiatedAck = (req, res) ->
   if status is 'smsSuccess'
 
     # find most recent outboundCommand by network hub MAC
-    OutboundCommand.findOne( gateway:req.body.macAddress ).populate('gateway').exec ( err, oc ) ->
+    OutboundCommand.findOne( gateway:req.body.macAddress ).sort('-_id').populate('gateway').exec ( err, oc ) ->
 
       # set deliveredAt
       oc.deliveredAt = Date.now()
@@ -67,7 +67,7 @@ exports.smsInitiatedOutcome = (req, res) ->
 
     # find sensor hub by MAC address
     # SensorHub.findById req.body.payload1, ( err, sensorHub ) ->
-    OutboundCommand.findOne( gateway:req.body.macAddress ).populate('gateway sensorHub').exec ( err, oc ) ->
+    OutboundCommand.findOne( gateway:req.body.macAddress ).sort('-_id').populate('gateway sensorHub').exec ( err, oc ) ->
 
       oc.resolvedAt = Date.now()
 
