@@ -26,5 +26,16 @@ module.exports = ( req, res ) ->
           smsTransactionDetails : smsTransactionDetails
           msgType               : 'HC1'
           params                : params
+        , ( err, outboundCommand ) ->
+
+            gateway.pendingOutboundCommand = outboundCommand
+
+            gateway.save ( e ) ->
+              if e
+                console.log '.. gateway.save ERROR:'
+                console.log e
+              else
+                console.log '.. gateway.pendingOutboundCommand set!'
+                console.log gateway
 
     res.json { ooga:'booga' }
