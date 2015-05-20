@@ -69,6 +69,9 @@ module.exports = (router, passport) ->
   router.route('/customer-accounts/:id')
     .put(c['customer-accounts'].update)
 
+  router.route('/gateways/:id')
+    .get(c.gateways.show)
+
 
 
   # CARRIER ADMIN
@@ -100,7 +103,6 @@ module.exports = (router, passport) ->
     .delete(c['customer-accounts'].delete)
 
   router.route('/gateways/:id')
-    .get(c.gateways.show)
     .post(c.gateways.create)
     .put(c.gateways.update)
     .delete(c.gateways.delete)
