@@ -14,7 +14,7 @@ exports.index = (req, res) ->
       $in:req.query.sensorHubMacAddresses
 
 #  SensorHub.find params, (e, sensorHubs) ->
-  SensorHub.find(params).populate('latestOutboundCommand').exec (e, sensorHubs) ->
+  SensorHub.find(params).exec (e, sensorHubs) ->
     res.json sensorHubs
 
 
