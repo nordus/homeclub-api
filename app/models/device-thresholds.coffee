@@ -39,10 +39,8 @@ deviceThresholdsSchema = new mongoose.Schema
     default : 900
 
   movementSensitivity:
-    type    : Number
-    min     : 0
-    max     : 999
-    default : 2
+    type    : String
+    default : '2'
 
 
 mongoose.model 'DeviceThresholds', deviceThresholdsSchema

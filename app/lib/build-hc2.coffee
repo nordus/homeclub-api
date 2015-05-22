@@ -1,71 +1,53 @@
 
-reverseBytes = require './reverse-bytes'
+pad           = require './pad'
+reverseBytes  = require './reverse-bytes'
+toHex         = require './to-hex'
 
 toCelcius = (f) ->
-  (f - 32) * 5 / 9
-
-zeroOrGreater = (n) ->
-  if n >= 0 then n else 0
+  Math.floor (f - 32) * 5 / 9
 
 
-toHex = (num, bytes = 2) ->
-  if isNaN( num )
-    return '0000'
-  else
-    int = parseInt( num )
-    b = new Buffer( bytes )
-    if bytes == 1
-      b.writeUInt8 int, 0
-      # reversing to match examples
-      # TODO: [DRJ] ensure this is correct
-      b.toString('hex').split('').reverse().join ''
-    else
-      b.writeUInt16LE int, 0
-      b.toString 'hex'
+module.exports = (opts) ->
 
-module.exports = (sensorHub, networkHub) ->
+  prefix    = 'HC2'
 
-  out             = {}
-  pendingCommands = sensorHub.latestOutboundCommand.params
+  formatted =
+    sequenceNumber      : toHex opts.sequenceNumber || 1
+    networkHubMAC       : reverseBytes opts.networkHubMAC
+    action              : pad opts.action
+    sensorHubMAC        : reverseBytes opts.sensorHubMAC
+    # does not apply if we are sending via SMS
+    nbrOfBytes          : '10'
+    temperatureMax      : toHex toCelcius( opts.temperatureMax )
+    temperatureMin      : toHex toCelcius( opts.temperatureMin )
+    lightMax            : toHex opts.lightMax
+    lightMin            : toHex opts.lightMin
+    humidityMax         : toHex opts.humidityMax
+    humidityMin         : toHex opts.humidityMin
+    # 1 byte
+    movementSensitivity : toHex opts.movementSensitivity, 1
+    wakeupInterval      : 'FF'
+    reportingInterval   : 'FF'
+    resetFlag           : '00'
 
-  customThresholdOrDefault = (attr) ->
-    pendingCommands[attr] or 'FF'
+  # TEST
+  console.log formatted
 
-
-  for sensorType in ['humidity', 'light', 'temperature']
-    for minOrMax in ['Min', 'Max']
-
-      k       = "#{sensorType}#{minOrMax}"
-      v       = pendingCommands[k]
-
-      if v
-
-        if sensorType is 'temperature'
-          v = toCelcius( v )
-          v = zeroOrGreater( v )
-
-        v = toHex( v )
-
-      out[k]  = v or 'FFFF'
-
-  stringPieces = [
-    'HC2'
-    toHex( 1 )      # Sequence Number from Gateway
-    reverseBytes( networkHub._id )
-    toHex( 2, 1 )   # Action.  2nd value is # of bytes.
-    reverseBytes( sensorHub._id )
-    toHex( 1 )      # Payload Size.  does not apply if we are sending via SMS.
-    toHex( out.temperatureMax )
-    toHex( out.temperatureMin )
-    toHex( out.lightMax )
-    toHex( out.lightMin )
-    toHex( out.humidityMax )
-    toHex( out.humidityMin )
-    customThresholdOrDefault( 'movementSensitivity' ) # '1F'
-    customThresholdOrDefault( 'wakeupInterval' )      # '40'
-    customThresholdOrDefault( 'reportingInterval' )   # '0A'
-    '00'            # resetFlag
-  ]
-
-
-  stringPieces.join ''
+  return [
+    prefix
+    formatted.sequenceNumber
+    formatted.networkHubMAC
+    formatted.action
+    formatted.sensorHubMAC
+    formatted.nbrOfBytes
+    formatted.temperatureMax
+    formatted.temperatureMin
+    formatted.lightMax
+    formatted.lightMin
+    formatted.humidityMax
+    formatted.humidityMin
+    formatted.movementSensitivity
+    formatted.wakeupInterval
+    formatted.reportingInterval
+    formatted.resetFlag
+  ].join('').toUpperCase()

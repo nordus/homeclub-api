@@ -33,6 +33,10 @@ module.exports = (router, passport) ->
   # ensure req.isAuthenticated for all routes below
   router.use auth.requiresApiLogin
 
+  router.route('/hc2')
+    .post(c.hc2)
+
+
   router.route('/fieldhistograms')
     .get(c.fieldhistograms)
 

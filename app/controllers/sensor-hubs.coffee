@@ -13,29 +13,22 @@ exports.index = (req, res) ->
     else _id:
       $in:req.query.sensorHubMacAddresses
 
-  SensorHub.find(params).exec (e, sensorHubs) ->
+  SensorHub.find(params).populate('deviceThresholds').exec (e, sensorHubs) ->
     res.json sensorHubs
 
 
-updateAndRespond = ( req, res ) ->
+exports.update = (req, res) ->
+  delete req.body._id
+
+  req.body.deviceThresholds = req.body.deviceThresholds._id
+
   SensorHub.findOneAndUpdate
     _id: req.params.id
   ,
     $set: req.body
   , (err, sensorHub) ->
-    res.json sensorHub
-
-exports.update = (req, res) ->
-  delete req.body._id
-
-  if req.body.deviceThresholds
-    DeviceThresholds.create req.body.deviceThresholds, (err, deviceThresholds) ->
-      req.body.pendingDeviceThresholds = deviceThresholds._id
-      delete req.body.deviceThresholds
-      updateAndRespond( req, res )
-
-  else
-    updateAndRespond( req, res )
+    SensorHub.findOne( _id:sensorHub._id ).populate('deviceThresholds').exec (err, sensorHubWithDeviceThresholds) ->
+      res.json err || sensorHubWithDeviceThresholds
 
 
 exports.show = (req, res) ->
