@@ -18,15 +18,10 @@ removeUnchanged = ( obj ) ->
 module.exports = ( req, res ) ->
 
   params        = _.clone req.body.formInputs
-  console.log params
   networkHubIDs = params.networkHubMAC or params.recipients
   networkHubIDs = ensureArray networkHubIDs
 
   Gateway.where( '_id' ).in( networkHubIDs ).populate( 'customerAccount' ).exec ( err, gateways ) ->
-
-    # TEST
-    if err
-      console.log err
 
     gateways.forEach ( gateway ) ->
 
@@ -37,9 +32,6 @@ module.exports = ( req, res ) ->
         changedThresholds = removeUnchanged( params )
 
         DeviceThresholds.create changedThresholds, ( err, dt ) ->
-
-          console.log '[DeviceThresholds.create]  dt:'
-          console.log err || dt
 
           OutboundCommand.create
             gateway               : gateway._id

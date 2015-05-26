@@ -9,12 +9,6 @@ sendEmail = require('../lib/send-email')
 
 exports.smsInitiatedAck = (req, res) ->
 
-  # TESTING
-  console.log 'smsInitiatedAck'
-  console.log 'request:'
-  console.log req.body
-
-
   networkHubSystemMessages =
     '1'   : 'smsSuccess'
     '10'  : 'smsFail'
@@ -27,35 +21,22 @@ exports.smsInitiatedAck = (req, res) ->
     OutboundCommand.findOne( gateway:req.body.macAddress ).sort('-_id').populate('gateway').exec ( err, oc ) ->
 
       # set deliveredAt
-      oc.deliveredAt = Date.now()
+      oc.deliveredAt                      = Date.now()
 
       # if HC1 remove pendingOutboundCommand
       if oc.msgType is 'HC1'
 
-        oc.resolvedAt = Date.now()
+        oc.resolvedAt                     = Date.now()
 
         oc.gateway.pendingOutboundCommand = undefined
         oc.gateway.save (err) ->
-          if err
-            console.log err
-          else
-            console.log '.. gateway.pendingOutboundCommand updated:'
-            console.log oc.gateway
 
-      # TESTING
-      console.log 'outboundCommand before save:'
-      console.log oc
       oc.save (e) ->
         res.json e || oc
 
 
 
 exports.smsInitiatedOutcome = (req, res) ->
-
-  # TESTING
-  console.log 'smsInitiatedOutcome'
-  console.log 'request:'
-  console.log req.body
 
   sensorHubSystemMessages =
     '1'   : 'updateSuccess'
@@ -65,31 +46,15 @@ exports.smsInitiatedOutcome = (req, res) ->
 
   if status is 'updateSuccess'
 
-    # find sensor hub by MAC address
-    # SensorHub.findById req.body.payload1, ( err, sensorHub ) ->
     OutboundCommand.findOne( gateway:req.body.macAddress ).sort('-_id').populate('gateway sensorHub').exec ( err, oc ) ->
 
-      oc.resolvedAt = Date.now()
+      oc.resolvedAt                     = Date.now()
 
-      # TEST
-      console.log 'sensorHub.deviceThresholds: ', oc.deviceThresholds
-
-      oc.sensorHub.deviceThresholds         = oc.deviceThresholds
-#      oc.sensorHub.pendingDeviceThresholds  = undefined
+      oc.sensorHub.deviceThresholds     = oc.deviceThresholds
       oc.sensorHub.save (err) ->
-        if err
-          console.log err
-        else
-          console.log '.. sensorHub.deviceThresholds updated:'
-          console.log oc.sensorHub
 
-      oc.gateway.pendingOutboundCommand     = undefined
+      oc.gateway.pendingOutboundCommand = undefined
       oc.gateway.save (err) ->
-        if err
-          console.log err
-        else
-          console.log '.. gateway.pendingOutboundCommand updated:'
-          console.log oc.gateway
 
       oc.save (e) ->
         res.json e || oc

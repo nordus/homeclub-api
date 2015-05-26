@@ -30,8 +30,6 @@ module.exports = (opts) ->
     reportingInterval   : 'FF'
     resetFlag           : '00'
 
-  # TEST
-  console.log formatted
 
   return [
     prefix
