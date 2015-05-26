@@ -51,4 +51,9 @@ module.exports = ( req, res ) ->
 
             gateway.save ( e ) ->
 
-    res.json { ooga:'booga' }
+            if gateways.length == 1
+              res.json outboundCommand
+
+
+    if gateways.length != 1
+      res.json { ooga:'booga' }
