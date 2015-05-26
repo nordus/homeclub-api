@@ -15,12 +15,7 @@ module.exports = ( req, res ) ->
   params        = _.clone req.body.formInputs
   console.log params
   networkHubIDs = params.networkHubMAC or params.recipients
-  console.log 'networkHubIDs before:'
-  console.log networkHubIDs
   networkHubIDs = ensureArray networkHubIDs
-
-  # TEST
-  console.log networkHubIDs
 
   Gateway.where( '_id' ).in( networkHubIDs ).populate( 'customerAccount' ).exec ( err, gateways ) ->
 
@@ -44,6 +39,7 @@ module.exports = ( req, res ) ->
           smsTransactionDetails : smsTransactionDetails
           msgType               : 'HC2'
           params                : params
+          sensorHub             : db.Types.ObjectId( params.sensorHubMAC )
         , ( err, outboundCommand ) ->
 
           gateway.pendingOutboundCommand = outboundCommand
