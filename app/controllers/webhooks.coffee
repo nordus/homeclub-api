@@ -32,6 +32,7 @@ exports.smsInitiatedAck = (req, res) ->
         oc.gateway.save (err) ->
 
       oc.save (e) ->
+        console.log '\n\n', "-= [smsInitiatedAck] smsSuccess!  #{oc.msgType} to #{oc.sensorHub || oc.gateway} deliveredAt #{new Date().toLocaleTimeString()} =-"
         res.json e || oc
 
 
@@ -48,10 +49,16 @@ exports.smsInitiatedOutcome = (req, res) ->
 
     OutboundCommand.findOne( gateway:req.body.macAddress ).sort('-_id').populate('gateway sensorHub').exec ( err, oc ) ->
 
+      # TEST
+      console.log '\n\n', "-= [smsInitiatedOutcome] #{oc.sensorHub._id} updateSuccess at #{new Date().toLocaleTimeString()} =-"
+      console.log "deviceThresholds: ", oc.sensorHub.deviceThresholds
+
       oc.resolvedAt                     = Date.now()
 
       oc.sensorHub.deviceThresholds     = oc.deviceThresholds
       oc.sensorHub.save (err) ->
+        unless err
+          console.log "updated deviceThresholds: ", oc.sensorHub.deviceThresholds
 
       oc.gateway.pendingOutboundCommand = undefined
       oc.gateway.save (err) ->
