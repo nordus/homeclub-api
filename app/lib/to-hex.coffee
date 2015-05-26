@@ -1,9 +1,6 @@
 
 module.exports = ( num, numBytes = 2 ) ->
 
-  # TEST
-  console.log "[toHex] num: #{num}, numBytes: #{numBytes}"
-
   int = parseInt num
   b   = new Buffer( numBytes )
 
