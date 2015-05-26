@@ -39,7 +39,7 @@ module.exports = ( req, res ) ->
           smsTransactionDetails : smsTransactionDetails
           msgType               : 'HC2'
           params                : params
-          sensorHub             : db.Types.ObjectId( params.sensorHubMAC )
+          sensorHub             : params.sensorHubMAC
         , ( err, outboundCommand ) ->
 
           gateway.pendingOutboundCommand = outboundCommand
