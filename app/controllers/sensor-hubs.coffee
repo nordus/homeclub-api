@@ -20,7 +20,8 @@ exports.index = (req, res) ->
 exports.update = (req, res) ->
   delete req.body._id
 
-  req.body.deviceThresholds = req.body.deviceThresholds._id
+  if req.body.deviceThresholds?._id
+    req.body.deviceThresholds = req.body.deviceThresholds._id
 
   SensorHub.findOneAndUpdate
     _id: req.params.id
