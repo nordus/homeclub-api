@@ -71,8 +71,11 @@ exports.smsInitiatedOutcome = (req, res) ->
 
       oc.resolvedAt = Date.now()
 
-      oc.sensorHub.deviceThresholds         = oc.sensorHub.pendingDeviceThresholds
-      oc.sensorHub.pendingDeviceThresholds  = undefined
+      # TEST
+      console.log 'sensorHub.deviceThresholds: ', oc.deviceThresholds
+
+      oc.sensorHub.deviceThresholds         = oc.deviceThresholds
+#      oc.sensorHub.pendingDeviceThresholds  = undefined
       oc.sensorHub.save (err) ->
         if err
           console.log err
