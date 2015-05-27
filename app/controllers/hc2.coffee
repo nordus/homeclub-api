@@ -23,6 +23,11 @@ module.exports = ( req, res ) ->
 
   Gateway.where( '_id' ).in( networkHubIDs ).populate( 'customerAccount' ).exec ( err, gateways ) ->
 
+    # if pendingOutboundCommand don't create another
+    if gateways.length == 1 && gateways[0].pendingOutboundCommand
+      res.json
+        _id : gateways[0].pendingOutboundCommand
+
     gateways.forEach ( gateway ) ->
 
       command = buildHC2( params )
