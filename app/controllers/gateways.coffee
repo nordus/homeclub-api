@@ -1,6 +1,7 @@
 db = require('../../config/db')
 {Gateway} = db.models
 whiteListedAttrs = '-__v'
+_ = require('lodash')
 
 
 exports.index = (req, res) ->
@@ -19,12 +20,32 @@ exports.show = (req, res) ->
 
 
 exports.update = (req, res) ->
+
   delete req.body._id
 
-  Gateway.findOneAndUpdate _id: req.params.id,
-    $set: req.body
+  query =
+    $set  : req.body
+
+  if req.body.pendingOutboundCommand is null
+    delete req.body.pendingOutboundCommand
+
+    query.$unset =
+      pendingOutboundCommand  : ''
+
+  if req.body.customerAccount
+    req.body.customerAccount = db.Types.ObjectId( req.body.customerAccount )
+
+  Gateway.findOneAndUpdate
+    _id: req.params.id
+  ,
+    query
   , (err, gateway) ->
-    res.json gateway
+    if err
+      console.log '[Gateway.findOneAndUpdate] ERROR:'
+      console.log err
+      res.json exploded:true
+    else
+      res.json gateway
 
 
 exports.delete = (req, res) ->
