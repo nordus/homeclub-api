@@ -30,8 +30,8 @@ module.exports = (req, res) ->
     url: "http://graylog-server.homeclub.us:12900/search/universal/keyword"
     qs: queryParams
     headers:
-      Authorization: 'Basic YXBpdXNlcjphcGl1c2Vy'
-      
+      Authorization: 'Basic YXBpdXNlcjI6YXBpdXNlcjI='
+
     method: 'GET'
 
 
