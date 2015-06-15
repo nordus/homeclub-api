@@ -47,5 +47,9 @@ customerAccountSchema = new mongoose.Schema
 
 #  mutedSensorCategories: {}
 
-    
+   status:
+    default : 'New'
+    type    : String
+
+
 mongoose.model 'CustomerAccount', customerAccountSchema
