@@ -38,6 +38,9 @@ exports.preview = (req, res) ->
 
 
 exports.create = (req, res) ->
+
+  acct.carrier = db.Types.ObjectId( req.body.carrier )  for acct in req.body.accounts
+
   async.parallel
     users: (cb) ->
       User.create req.body.accounts, cb
