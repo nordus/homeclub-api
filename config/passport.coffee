@@ -9,7 +9,7 @@ module.exports = (passport) ->
     usernameField: 'email'
   , (email, password, done) ->
     User.findOne
-      email: email
+      email: email.toLowerCase()
     , (err, user) ->
         return done(err, user)  unless user
         done(null, user)  if user.authenticate(password)
