@@ -17,6 +17,9 @@ module.exports = (req, res) ->
     sort    : 'timestamp:asc'
     fields  : fields.join()
 
+  if req.query.sensorHubMacAddress
+    queryParams.query += " AND sensorHubMacAddress:#{req.query.sensorHubMacAddress}"
+
   if req.query.sensorHubType
     queryParams.query += " AND sensorHubType:#{req.query.sensorHubType}"
 
