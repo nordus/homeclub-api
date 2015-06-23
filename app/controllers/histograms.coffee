@@ -13,7 +13,7 @@ buildRequestOptions = (macAddressObj, start, interval) ->
     url: 'http://graylog-server.homeclub.us:12900/search/universal/keyword/histogram'
     json: true
     headers:
-      Authorization: 'Basic YXBpdXNlcjphcGl1c2Vy'
+      Authorization: 'Basic YXBpdXNlcjI6YXBpdXNlcjI='
     method: 'GET'
     qs:
       query: query
