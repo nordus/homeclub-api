@@ -6,15 +6,23 @@ var express         = require('express'),
     session         = require('express-session'),
     passport        = require('passport'),
 
-    app             = module.exports = express(),
+    app             = express(),
     bodyParser      = require('body-parser'),
     db              = require('./config/db'),  // connect to our database
 
     envConfig       = require('./config/env-config'),
-    MongoStore      = require('connect-mongo')(session);
+    MongoStore      = require('connect-mongo')(session),
+    port            = process.env.PORT || 3000;
 
-var port    = process.env.PORT || 3000;
-console.log('port: ', port);
+
+function gracefulExit() {
+  db.connection.close( function() {
+    console.log( '.. DATABASE CONNECTION CLOSED' );
+    process.exit( 0 );
+  })
+}
+
+process.on( 'SIGINT', gracefulExit ).on( 'SIGTERM', gracefulExit );
 
 require('./config/passport')(passport);  // pass passport for configuration
 
