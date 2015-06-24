@@ -41,8 +41,10 @@ var allowCrossDomain = function(req, res, next) {
 app.use(allowCrossDomain);
 
 app.use(session({
-  secret  : 's3ss10ns3cr3t',
-  store   : new MongoStore({
+  secret            : 's3ss10ns3cr3t',
+  resave            : false,
+  saveUninitialized : true,
+  store             : new MongoStore({
     url: envConfig.db
   })
 }));
