@@ -45,7 +45,8 @@ app.use(session({
   resave            : false,
   saveUninitialized : true,
   store             : new MongoStore({
-    url: envConfig.db
+    //url: envConfig.db
+    mongooseConnection: db.connection
   })
 }));
 
