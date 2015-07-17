@@ -29,6 +29,6 @@ exports.checkForBackup = ( req, res ) ->
 
 exports.deleteFromGraylog = ( req, res ) ->
 
-  url = "http://10.0.0.43:9200/graylog_0/message/_query?q=macAddress:#{req.query.macAddress}"
+  url = "http://10.0.0.43:9200/graylog_0/message/_query?q=macAddress:#{req.body.macAddress}"
 
   request.del( url ).pipe res
