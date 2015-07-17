@@ -119,6 +119,15 @@ module.exports = (router, passport) ->
   # HOMECLUB ADMIN
   router.use auth.requiresRole('homeClubAdmin')
 
+  router.route('/test-data/backup')
+    .post(c['test-data'].backupToGoogleDrive)
+
+  router.route('/test-data/check-for-backup')
+    .post(c['test-data'].checkForBackup)
+
+  router.route('/test-data/delete-from-graylog')
+    .post(c['test-data'].deleteFromGraylog)
+
   router.route('/reset')
     .get(c.reset)
 

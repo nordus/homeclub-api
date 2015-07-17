@@ -19,6 +19,8 @@
     "express": "~4.0.0",
     "express-session": "^1.11.3",
     "follow-redirects": "0.0.3",
+    "google-auth-library": "^0.9.6",
+    "googleapis": "^2.0.6",
     "lodash": "^3.9.3",
     "mongoose": "^4.0.6",
     "passport": "~0.2.0",
