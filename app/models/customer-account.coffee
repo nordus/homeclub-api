@@ -51,5 +51,7 @@ customerAccountSchema = new mongoose.Schema
     default : 'New'
     type    : String
 
+  shipDate  : Date
+
 
 mongoose.model 'CustomerAccount', customerAccountSchema
