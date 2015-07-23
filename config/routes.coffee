@@ -85,6 +85,9 @@ module.exports = (router, passport) ->
 
 
   # BOTH (CARRIER ADMIN and HOMECLUB ADMIN)
+  router.route( '/google-analytics/page-views' )
+    .get( c['google-analytics'].pageViews )
+
   router.route('/histograms/:carrier?')
     .get(c.histograms)
 
@@ -172,3 +175,6 @@ module.exports = (router, passport) ->
   router.route('/sensor-hubs/:id')
     .get(c['sensor-hubs'].show)
     .post(c['sensor-hubs'].create)
+
+#  router.route( '/google-analytics/page-views' )
+#    .get( c['google-analytics'].pageViews )
