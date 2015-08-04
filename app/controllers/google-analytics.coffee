@@ -11,8 +11,7 @@ formatResponse = ( resp, acctId ) ->
   if resp != null && resp.rows
     formattedChartData = for nestedRow in resp.rows
       [match, year, month, day] = nestedRow[0].split /(\d{4})(\d{2})(\d{2})/
-      unless month is 0
-        month -= 1
+      month--
       epoch = Date.UTC( year, month, day )
       x:epoch, y:parseInt(nestedRow[1])
   [
