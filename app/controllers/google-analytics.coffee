@@ -13,18 +13,18 @@ formatResponse = ( resp, acctId ) ->
     for nestedRow in resp.rows
       [match, year, month, day] = nestedRow[0].split /(\d{4})(\d{2})(\d{2})/
       month--
-      epoch = Date.UTC( year, month, day )
+      epoch = Date.UTC( year, month, day, 12 )
 
       pageviewChartData.push    x:epoch, y:parseInt(nestedRow[1])
       screenviewChartData.push  x:epoch, y:parseInt(nestedRow[2])
   [
     data: pageviewChartData
-    name: 'pageviews'
-    color: '#7bc5d3'
+    name: 'page views'
+    color: '#53b2da'
   ,
     data: screenviewChartData
-    name: 'screenviews'
-    color: '#53b2da'
+    name: 'screen views'
+    color: '#ff8000'
   ]
 
 
