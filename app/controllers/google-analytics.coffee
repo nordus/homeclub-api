@@ -1,6 +1,9 @@
-async     = require 'async'
-pageViews = require '../lib/google-analytics-page-views'
-_         = require 'lodash'
+async             = require 'async'
+pageViews         = require '../lib/google-analytics-page-views'
+_                 = require 'lodash'
+db                = require('../../config/db')
+{CustomerAccount} = db.models
+_                 = require('lodash')
 
 
 ensureArray = (item) ->
@@ -43,16 +46,26 @@ exports.pageViews = ( req, res ) ->
     res.json err or out
 
 
-exports.usageReport = ( req, res ) ->
+setAccountIdsAndStartDates = ( req, res, next ) ->
+  if req.query.carrier && req.user.roles.carrierAdmin
+    CustomerAccount.where( carrier: req.query.carrier, shipDate: $ne:null ).select( 'shipDate' ).lean().exec ( e, accts ) ->
+      accountIds  = _.pluck accts, '_id'
+      startDates  = accts.map ( acct ) -> acct.shipDate.toISOString().split( 'T' )[0]
+      req.accountIdsAndStartDates = _.zip accountIds, startDates
+      next()
 
-  accountIds  = ensureArray( req.query.accountIds )
-  startDates  = ensureArray( req.query.startDates )
-  accountIdsAndStartDates = _.zip accountIds, startDates
+  else
+    accountIds  = ensureArray( req.query.accountIds )
+    startDates  = ensureArray( req.query.startDates )
+    req.accountIdsAndStartDates = _.zip accountIds, startDates
+    next()
+
+generateCsv = ( req, res, next ) ->
   out         = [
                   ['Account ID', 'Date', 'Page Views', 'Screen Views']
                 ]
 
-  async.each accountIdsAndStartDates, ( accountIdAndStartDate, done ) ->
+  async.each req.accountIdsAndStartDates, ( accountIdAndStartDate, done ) ->
 
     [acctId, startDate] = accountIdAndStartDate
 
@@ -67,3 +80,5 @@ exports.usageReport = ( req, res ) ->
 
   , ( err ) ->
     res.csv out
+
+exports.usageReport = [setAccountIdsAndStartDates, generateCsv]

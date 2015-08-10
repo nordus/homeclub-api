@@ -5,9 +5,6 @@ auth        = require('./auth')
 
 module.exports = (router, passport) ->
 
-  router.route( '/google-analytics/page-views' )
-    .get( c['google-analytics'].pageViews )
-
   # WEB HOOKS
   router.route('/webhooks/network-hub-event')
     .post(c.webhooks.networkHubEvent)
@@ -88,8 +85,11 @@ module.exports = (router, passport) ->
 
 
   # BOTH (CARRIER ADMIN and HOMECLUB ADMIN)
-#  router.route( '/google-analytics/page-views' )
-#    .get( c['google-analytics'].pageViews )
+  router.route( '/google-analytics/page-views' )
+    .get( c['google-analytics'].pageViews )
+
+  router.route( '/google-analytics/usage-report' )
+    .get( c['google-analytics'].usageReport )
 
   router.route('/histograms/:carrier?')
     .get(c.histograms)
