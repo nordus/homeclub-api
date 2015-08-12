@@ -35,15 +35,13 @@ formatResponse = ( resp ) ->
 exports.pageViews = ( req, res ) ->
 
   if req.query.carrier
-    out         = {}
-
     opts  =
       carrierId : req.query.carrier
 
     pageViews opts, ( err, resp ) ->
       res.json err or formatResponse( resp )
 
-  else
+  if req.query.accountIds
     accountIds  = ensureArray( req.query.accountIds )
     out         = {}
 
@@ -57,6 +55,10 @@ exports.pageViews = ( req, res ) ->
         done()
     , ( err ) ->
       res.json err or out
+
+  else if req.user.roles.homeClubAdmin
+    pageViews {}, ( err, resp ) ->
+      res.json err or formatResponse( resp )
 
 
 setAccountIdsAndStartDates = ( req, res, next ) ->
