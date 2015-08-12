@@ -10,7 +10,7 @@ ensureArray = (item) ->
   if Array.isArray(item) then item else [item]
 
 
-formatResponse = ( resp, acctId ) ->
+formatResponse = ( resp ) ->
   pageviewChartData   = []
   screenviewChartData = []
   if resp != null && resp.rows
@@ -34,20 +34,33 @@ formatResponse = ( resp, acctId ) ->
 
 exports.pageViews = ( req, res ) ->
 
-  accountIds  = ensureArray( req.query.accountIds )
-  out         = {}
+  if req.query.carrier
+    out         = {}
 
-  async.each accountIds, ( acctId, done ) ->
-    pageViews acctId, undefined, ( err, resp ) ->
-      return done( err )  if err
-      out[acctId] = formatResponse( resp, acctId )
-      done()
-  , ( err ) ->
-    res.json err or out
+    opts  =
+      carrierId : req.query.carrier
+
+    pageViews opts, ( err, resp ) ->
+      res.json err or formatResponse( resp )
+
+  else
+    accountIds  = ensureArray( req.query.accountIds )
+    out         = {}
+
+    async.each accountIds, ( acctId, done ) ->
+      opts =
+        acctId  : acctId
+
+      pageViews opts, ( err, resp ) ->
+        return done( err )  if err
+        out[acctId] = formatResponse( resp )
+        done()
+    , ( err ) ->
+      res.json err or out
 
 
 setAccountIdsAndStartDates = ( req, res, next ) ->
-  if req.query.carrier && req.user.roles.carrierAdmin
+  if req.query.carrier
     CustomerAccount.where( carrier: req.query.carrier, shipDate: $ne:null ).select( 'shipDate' ).lean().exec ( e, accts ) ->
       accountIds  = _.pluck accts, '_id'
       startDates  = accts.map ( acct ) -> acct.shipDate.toISOString().split( 'T' )[0]
@@ -69,7 +82,11 @@ generateCsv = ( req, res, next ) ->
 
     [acctId, startDate] = accountIdAndStartDate
 
-    pageViews acctId, startDate, ( err, resp ) ->
+    opts =
+      acctId    : acctId
+      startDate : startDate
+
+    pageViews opts, ( err, resp ) ->
       return done( err )  if err
 
       if rows = resp?.rows
