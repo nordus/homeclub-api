@@ -18,7 +18,7 @@ buildRequestOptions = (macAddressObj, start, interval) ->
     qs:
       query: query
       interval: interval
-      keyword: "#{start} to midnight tomorrow"
+      keyword: "#{start} +0000 to midnight tomorrow +0000"
   }
 
 formatResponse = (resp, sensorHubMacAddress) ->
