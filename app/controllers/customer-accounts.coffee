@@ -37,7 +37,8 @@ exports.update = (req, res) ->
   CustomerAccount.findOneAndUpdate _id: db.Types.ObjectId(req.params.id),
     $set: req.body
   , (err, account) ->
-    res.json account
+    CustomerAccount.findById account._id, ( e, updatedAccount ) ->
+      res.json updatedAccount
 
 
 exports.show = (req, res) ->
