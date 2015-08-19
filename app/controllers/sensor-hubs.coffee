@@ -1,20 +1,34 @@
 path = require('path')
 buildHC2 = require '../lib/build-hc2'
+_ = require 'lodash'
+
 
 configDirPath = path.resolve(__dirname, '..', '..', 'config')
 db = require("#{configDirPath}/db")
-{SensorHub, DeviceThresholds} = db.models
+{CustomerAccount, SensorHub, DeviceThresholds} = db.models
 whiteListedAttrs = '-__v'
 
 
-exports.index = (req, res) ->
-  params = switch req.query.sensorHubMacAddresses
+setSensorHubMacAddressesOfCarrier = ( req, res, next ) ->
+  if req.user.roles.carrierAdmin && carrierId = req.query.carrier
+    CustomerAccount.where( carrier:db.Types.ObjectId(carrierId) ).select('gateways').populate('gateways').lean().exec (e, customerAccounts) ->
+      gateways = _.flatten(_.pluck(customerAccounts, 'gateways'))
+      req.sensorHubMacAddressesOfCarrier = _.flatten(_.pluck(gateways, 'sensorHubs'))
+      next()
+  else
+    next()
+
+index = ( req, res, next ) ->
+  sensorHubMacAddresses = req.query.sensorHubMacAddresses || req.sensorHubMacAddressesOfCarrier
+  params = switch sensorHubMacAddresses
     when undefined then {}
     else _id:
-      $in:req.query.sensorHubMacAddresses
+      $in:sensorHubMacAddresses
 
   SensorHub.find(params).populate('deviceThresholds').exec (e, sensorHubs) ->
     res.json sensorHubs
+
+exports.index = [setSensorHubMacAddressesOfCarrier, index]
 
 
 exports.update = (req, res) ->
