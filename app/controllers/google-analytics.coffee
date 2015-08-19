@@ -23,11 +23,11 @@ formatResponse = ( resp ) ->
       screenviewChartData.push  x:epoch, y:parseInt(nestedRow[2])
   [
     data: pageviewChartData
-    name: 'page views'
+    name: 'web views'
     color: '#53b2da'
   ,
     data: screenviewChartData
-    name: 'screen views'
+    name: 'mobile views'
     color: '#ff8000'
   ]
 
@@ -98,6 +98,7 @@ generateCsv = ( req, res, next ) ->
         done()
 
   , ( err ) ->
+    res.attachment "web_and_mobile_usage.csv"
     res.csv out
 
 exports.usageReport = [setAccountIdsAndStartDates, generateCsv]
