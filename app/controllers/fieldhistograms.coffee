@@ -90,7 +90,7 @@ module.exports = (req, res) ->
         formatted = formatAveragesAndRanges(responses.splice(0,1)[0], formatAsFahrenheit)
         color = '#7cb5ec'
         [suffix, unit] = switch field
-          when 'sensorHubData1' then ['°F', 'Temperature']
+          when 'sensorHubData1' then ['°F', 'Average Temp']
           when 'sensorHubData2' then [' lux', 'Light']
           when 'sensorHubData3' then ['%', 'Humidity']
         out[sensorHubNameOrMac].push {
