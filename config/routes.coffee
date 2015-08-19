@@ -85,6 +85,9 @@ module.exports = (router, passport) ->
 
 
   # BOTH (CARRIER ADMIN and HOMECLUB ADMIN)
+  router.route('/users')
+    .get(c.users.index)
+
   router.route( '/google-analytics/page-views' )
     .get( c['google-analytics'].pageViews )
 
@@ -143,9 +146,6 @@ module.exports = (router, passport) ->
   router.route('/carriers')
     .get(c.carriers.index)
     .post(c.carriers.create)
-
-  router.route('/users')
-    .get(c.users.index)
 
   router.route('/outbound-sms')
     .get(c['outbound-sms'].index)

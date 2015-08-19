@@ -1,13 +1,18 @@
+_                 = require 'lodash'
 async             = require 'async'
 db                = require '../../config/db'
 
-User              = db.models.User
 whiteListedAttrs  = '-__v -hashedPassword -salt'
+{CustomerAccount, User}  = db.models
     
     
 exports.index = (req, res) ->
-  User.find({}, whiteListedAttrs).exec (err, users) ->
-    res.json users
+  if req.query.carrier
+    CustomerAccount.where( carrier: req.query.carrier ).select( 'user' ).populate( 'user' ).lean().exec ( e, accts ) ->
+      return res.json _.pluck accts, 'user'
+  else
+    User.find({}, whiteListedAttrs).exec (err, users) ->
+      res.json users
 
 
 exports.update = (req, res) ->
