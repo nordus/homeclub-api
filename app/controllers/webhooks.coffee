@@ -76,8 +76,41 @@ exports.networkHubEvent = (req, res) ->
 
   res.sendStatus 200
 
-  # TODO: refactor or remove
+  # TODO: remove gatewayEventEmailSubscriptions and gatewayEventSmsSubscriptions from customerAccount schema
+  #  - customerAccount no longer checks opt-in
+  #  - gateway only sends if gatewayEventCode in [1,2]
   #  - customerAccount no longer has gatewayEventEmailSubscriptions or gatewayEventSmsSubscriptions
+
+  CustomerAccount.findOne( gateways:req.body.macAddress ).populate( 'user' ).exec ( err, account ) ->
+
+    email = account.user.email
+    body  = alertText.gatewayEvent( req.body.gatewayEventCode )
+
+    sendEmail
+      recipientEmail  : email
+      subject         : 'Network Hub Alert'
+      body
+    , (err, message) ->
+
+        console.log 'Email sent to: ', email
+
+        OutboundEmail.create
+          gateway         : req.body.macAddress
+          customerAccount : account._id
+          email
+          reading         : req.body
+
+    phoneNumber = "+1#{account.phone.replace(/\D/g, '')}"
+
+    sendSms phoneNumber, body, ( err, responseData ) ->
+
+      console.log 'SMS sent to: ', phoneNumber
+
+      OutboundSms.create
+        gateway         : req.body.macAddress
+        customerAccount : account._id
+        phoneNumber
+        reading         : req.body
 
   # find account with networkHubEvent number in email/SMS subscriptions array
 #  async.parallel
