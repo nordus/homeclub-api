@@ -24,8 +24,6 @@ module.exports = ( req, res ) ->
   Gateway.where( '_id' ).in( networkHubIDs ).populate( 'customerAccount' ).exec ( err, gateways ) ->
 
     # if pendingOutboundCommand don't create another
-    console.log 'gateways.length: ', gateways.length
-    console.log 'gateways[0].pendingOutboundCommand: ', gateways[0].pendingOutboundCommand
     if gateways.length == 1 && gateways[0].pendingOutboundCommand
       return res.json
         _id                             : gateways[0].pendingOutboundCommand
