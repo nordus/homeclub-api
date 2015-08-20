@@ -9,6 +9,8 @@ sendEmail = require('../lib/send-email')
 
 exports.smsInitiatedAck = (req, res) ->
 
+  res.sendStatus 200
+
   networkHubSystemMessages =
     '1'   : 'smsSuccess'
     '10'  : 'smsFail'
@@ -33,11 +35,13 @@ exports.smsInitiatedAck = (req, res) ->
 
       oc.save (e) ->
         console.log '\n\n', "-= [smsInitiatedAck] smsSuccess!  #{oc.msgType} to #{oc.sensorHub || oc.gateway} deliveredAt #{new Date().toLocaleTimeString()} =-"
-        res.json e || oc
+#        res.json e || oc
 
 
 
 exports.smsInitiatedOutcome = (req, res) ->
+
+  res.sendStatus 200
 
   sensorHubSystemMessages =
     '1'   : 'updateSuccess'
@@ -64,65 +68,71 @@ exports.smsInitiatedOutcome = (req, res) ->
       oc.gateway.save (err) ->
 
       oc.save (e) ->
-        res.json e || oc
+#        res.json e || oc
 
 
 
 exports.networkHubEvent = (req, res) ->
+
+  res.sendStatus 200
+
+  # TODO: refactor or remove
+  #  - customerAccount no longer has gatewayEventEmailSubscriptions or gatewayEventSmsSubscriptions
+
   # find account with networkHubEvent number in email/SMS subscriptions array
-  async.parallel
-    accountToEmail: (cb) -> CustomerAccount.findOne( gateways:req.body.macAddress, gatewayEventEmailSubscriptions:req.body.gatewayEventCode ).populate('user').exec cb
-    accountToSms: (cb) -> CustomerAccount.findOne { gateways:req.body.macAddress, gatewayEventSmsSubscriptions:req.body.gatewayEventCode }, cb
-  , (e, r) ->
-    if e
-      console.log '[async.parallel] ERROR:'
-      console.log e
+#  async.parallel
+#    accountToEmail: (cb) -> CustomerAccount.findOne( gateways:req.body.macAddress, gatewayEventEmailSubscriptions:req.body.gatewayEventCode ).populate('user').exec cb
+#    accountToSms: (cb) -> CustomerAccount.findOne { gateways:req.body.macAddress, gatewayEventSmsSubscriptions:req.body.gatewayEventCode }, cb
+#  , (e, r) ->
+#    if e
+#      console.log '[async.parallel] ERROR:'
+#      console.log e
+#
+#
+#    if r.accountToEmail && r.accountToEmail.user.email
+#
+#      email = r.accountToEmail.user.email
+#      body = alertText.gatewayEvent(req.body.gatewayEventCode)
+#
+#      sendEmail {recipientEmail:email, subject:'Network Hub Alert', body}, (err, message) ->
+#        if err
+#          console.log '[sendEmail] ERROR:'
+#          console.log err
+#        else
+#
+#          console.log 'Email sent to: ', email
+#
+#          OutboundEmail.create
+#            gateway         : req.body.macAddress
+#            customerAccount : r.accountToEmail._id
+#            email           : email
+#            reading         : req.body
+#
+#
+#    if r.accountToSms && r.accountToSms.phone
+#
+#      phoneNumber = "+1#{r.accountToSms.phone.replace(/\D/g, '')}"
+#      body = alertText.gatewayEvent(req.body.gatewayEventCode)
+#
+#      sendSms phoneNumber, body, (err, responseData) ->
+#        if err
+#          console.log '[sendSms] ERROR:'
+#          console.log err
+#        else
+#
+#          console.log 'SMS sent to: ', phoneNumber
+#
+#          # save to db for tracking purposes
+#          OutboundSms.create
+#            gateway         : req.body.macAddress
+#            customerAccount : r.accountToSms._id
+#            phoneNumber     : phoneNumber
+#            reading         : req.body
 
 
-    if r.accountToEmail && r.accountToEmail.user.email
-
-      email = r.accountToEmail.user.email
-      body = alertText.gatewayEvent(req.body.gatewayEventCode)
-
-      sendEmail {recipientEmail:email, subject:'Network Hub Alert', body}, (err, message) ->
-        if err
-          console.log '[sendEmail] ERROR:'
-          console.log err
-        else
-
-          console.log 'Email sent to: ', email
-
-          OutboundEmail.create
-            gateway         : req.body.macAddress
-            customerAccount : r.accountToEmail._id
-            email           : email
-            reading         : req.body
-
-
-    if r.accountToSms && r.accountToSms.phone
-
-      phoneNumber = "+1#{r.accountToSms.phone.replace(/\D/g, '')}"
-      body = alertText.gatewayEvent(req.body.gatewayEventCode)
-
-      sendSms phoneNumber, body, (err, responseData) ->
-        if err
-          console.log '[sendSms] ERROR:'
-          console.log err
-        else
-
-          console.log 'SMS sent to: ', phoneNumber
-    
-          # save to db for tracking purposes
-          OutboundSms.create
-            gateway         : req.body.macAddress
-            customerAccount : r.accountToSms._id
-            phoneNumber     : phoneNumber
-            reading         : req.body
-
-
-    res.json
-      email: r.accountToEmail
-      sms: r.accountToSms
+#    res.json
+#      email: r.accountToEmail
+#      sms: r.accountToSms
 
 
 
@@ -138,6 +148,9 @@ capitalize = (str) ->
   str.charAt(0).toUpperCase() + str.slice(1)
 
 exports.sensorHubEvent = (req, res) ->
+
+  res.sendStatus 200
+
   eventResolved = req.body.sensorEventEnd isnt 0
 
   if eventResolved
@@ -147,7 +160,7 @@ exports.sensorHubEvent = (req, res) ->
 
   category = getCategory(sensorHubEvent)
 
-  # find account with sensorHubEvent number in email/SMS subscriptions array
+  # find SensorHub with sensorHubEvent number in email/SMS subscriptions array
   async.parallel
     email: (cb) -> SensorHub.findOne { _id:req.body.sensorHubMacAddress, emailSubscriptions:category }, cb
     sms: (cb) -> SensorHub.findOne { _id:req.body.sensorHubMacAddress, smsSubscriptions:category }, cb
@@ -204,4 +217,4 @@ exports.sensorHubEvent = (req, res) ->
               reading         : req.body
 
 
-    res.json r
+#    res.json r
