@@ -26,6 +26,9 @@ module.exports = (req, res) ->
   if req.query.macAddress
     queryParams.query += " AND macAddress:#{req.query.macAddress}"
 
+  if req.query.gatewayEventCode
+    queryParams.query += " AND gatewayEventCode:#{req.query.gatewayEventCode.replace /\+/g, ' '}"
+
   if req.query.offset
     queryParams.offset = req.query.offset
 
