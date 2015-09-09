@@ -1,9 +1,15 @@
+jwt = require 'jsonwebtoken'
 {CarrierAdmin, CustomerAccount, HomeClubAdmin} = require('../../config/db').models
 
 
 exports.customerAccount = (req, res) ->
   CustomerAccount.findOne(req.user.roles.customerAccount).populate('user gateways').exec (e, account) ->
-    res.json account
+
+    token = jwt.sign req.user, 's3ss10ns3cr3t'
+
+    res.json
+      account : account
+      token   : token
 
 
 exports.homeClubAdmin = (req, res) ->
