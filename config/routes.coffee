@@ -45,11 +45,6 @@ module.exports = (router, passport) ->
   router.route('/users/:id')
     .put(c.users.update)
     .get(c.users.show)
-
-  router.route('/logout')
-    .post (req, res) ->
-      req.logout()
-      res.end()
       
   router.route('/search')
     .get(c.search)
