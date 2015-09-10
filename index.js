@@ -14,7 +14,9 @@ var express         = require('express'),
 
     envConfig       = require('./config/env-config'),
     MongoStore      = require('connect-mongo')(session),
-    port            = process.env.PORT || 3000;
+    port            = process.env.PORT || 3000,
+
+    expressJwt      = require('express-jwt');
 
 
 function gracefulExit() {
@@ -54,6 +56,13 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());  // persistent login sessions
+
+app.use(expressJwt({
+  secret          : 's3ss10ns3cr3t'
+}).unless({
+  path            : ['/login', /\/webhooks.*/, /\/me.*/],
+  useOriginalUrl  : false
+}));
 
 var router = express.Router();
 // load our routes and pass in our app and fully configured passport

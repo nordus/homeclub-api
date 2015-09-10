@@ -30,6 +30,8 @@ module.exports = (router, passport) ->
     .post passport.authenticate('local'), (req, res) ->
       res.redirect req.user.defaultReturnUrl()
 
+  router.all '/me/*', auth.setUserFromAuthToken
+
   # ensure req.isAuthenticated for all routes below
   router.use auth.requiresApiLogin
 
