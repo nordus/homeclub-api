@@ -60,7 +60,7 @@ app.use(passport.session());  // persistent login sessions
 app.use(expressJwt({
   secret          : 's3ss10ns3cr3t'
 }).unless({
-  path            : ['/login', /\/webhooks.*/, /\/me.*/],
+  path            : ['/login', /\/webhooks.*/, /\/me.*/, /\/sms/],
   useOriginalUrl  : false
 }));
 
