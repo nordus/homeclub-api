@@ -58,7 +58,15 @@ app.use(passport.initialize());
 app.use(passport.session());  // persistent login sessions
 
 app.use(expressJwt({
-  secret          : 's3ss10ns3cr3t'
+  secret          : 's3ss10ns3cr3t',
+  getToken        : function( req ) {
+    if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
+      return req.headers.authorization.split(' ')[1];
+    } else if (req.query && req.query.token) {
+      return req.query.token;
+    }
+    return null;
+  }
 }).unless({
   path            : ['/login', /\/webhooks.*/, /\/me.*/, /\/sms/],
   useOriginalUrl  : false
