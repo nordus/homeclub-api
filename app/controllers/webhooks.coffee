@@ -35,7 +35,6 @@ exports.smsInitiatedAck = (req, res) ->
 
       oc.save (e) ->
         console.log '\n\n', "-= [smsInitiatedAck] smsSuccess!  #{oc.msgType} to #{oc.sensorHub || oc.gateway} deliveredAt #{new Date().toLocaleTimeString()} =-"
-#        res.json e || oc
 
 
 
@@ -68,7 +67,6 @@ exports.smsInitiatedOutcome = (req, res) ->
       oc.gateway.save (err) ->
 
       oc.save (e) ->
-#        res.json e || oc
 
 
 
@@ -83,8 +81,11 @@ exports.networkHubEvent = (req, res) ->
 
   CustomerAccount.findOne( gateways:req.body.macAddress ).populate( 'user' ).exec ( err, account ) ->
 
-    email = account.user.email
-    body  = alertText.gatewayEvent( req.body.gatewayEventCode )
+    pastShipDate  = account.shipDate < Date.now
+    email         = account.user.email
+    body          = alertText.gatewayEvent( req.body.gatewayEventCode )
+
+    return unless pastShipDate
 
     sendEmail
       recipientEmail  : email
@@ -111,62 +112,6 @@ exports.networkHubEvent = (req, res) ->
         customerAccount : account._id
         phoneNumber
         reading         : req.body
-
-  # find account with networkHubEvent number in email/SMS subscriptions array
-#  async.parallel
-#    accountToEmail: (cb) -> CustomerAccount.findOne( gateways:req.body.macAddress, gatewayEventEmailSubscriptions:req.body.gatewayEventCode ).populate('user').exec cb
-#    accountToSms: (cb) -> CustomerAccount.findOne { gateways:req.body.macAddress, gatewayEventSmsSubscriptions:req.body.gatewayEventCode }, cb
-#  , (e, r) ->
-#    if e
-#      console.log '[async.parallel] ERROR:'
-#      console.log e
-#
-#
-#    if r.accountToEmail && r.accountToEmail.user.email
-#
-#      email = r.accountToEmail.user.email
-#      body = alertText.gatewayEvent(req.body.gatewayEventCode)
-#
-#      sendEmail {recipientEmail:email, subject:'Network Hub Alert', body}, (err, message) ->
-#        if err
-#          console.log '[sendEmail] ERROR:'
-#          console.log err
-#        else
-#
-#          console.log 'Email sent to: ', email
-#
-#          OutboundEmail.create
-#            gateway         : req.body.macAddress
-#            customerAccount : r.accountToEmail._id
-#            email           : email
-#            reading         : req.body
-#
-#
-#    if r.accountToSms && r.accountToSms.phone
-#
-#      phoneNumber = "+1#{r.accountToSms.phone.replace(/\D/g, '')}"
-#      body = alertText.gatewayEvent(req.body.gatewayEventCode)
-#
-#      sendSms phoneNumber, body, (err, responseData) ->
-#        if err
-#          console.log '[sendSms] ERROR:'
-#          console.log err
-#        else
-#
-#          console.log 'SMS sent to: ', phoneNumber
-#
-#          # save to db for tracking purposes
-#          OutboundSms.create
-#            gateway         : req.body.macAddress
-#            customerAccount : r.accountToSms._id
-#            phoneNumber     : phoneNumber
-#            reading         : req.body
-
-
-#    res.json
-#      email: r.accountToEmail
-#      sms: r.accountToSms
-
 
 
 getCategory = (eventCode) ->
@@ -206,7 +151,9 @@ exports.sensorHubEvent = (req, res) ->
     if r.email
       CustomerAccount.findOne( gateways:req.body.macAddress ).populate('user').exec (err, accountToEmail) ->
 
-        return unless accountToEmail.user
+        pastShipDate  = accountToEmail.shipDate < Date.now()
+
+        return unless pastShipDate and accountToEmail.user
 
         email = accountToEmail.user.email
         body = alertText.sensorHubEvent(sensorHubEvent, eventResolved)
@@ -229,7 +176,9 @@ exports.sensorHubEvent = (req, res) ->
     if r.sms
       CustomerAccount.findOne { gateways:req.body.macAddress }, (err, accountToSms) ->
 
-        return unless accountToSms.phone
+        pastShipDate  = accountToSms.shipDate < Date.now()
+
+        return unless pastShipDate and accountToSms.phone
 
         phoneNumber = "+1#{accountToSms.phone.replace(/\D/g, '')}"
         body = alertText.sensorHubEvent(sensorHubEvent, eventResolved)
@@ -248,6 +197,3 @@ exports.sensorHubEvent = (req, res) ->
               customerAccount : accountToSms._id
               phoneNumber     : phoneNumber
               reading         : req.body
-
-
-#    res.json r
