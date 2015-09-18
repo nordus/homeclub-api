@@ -7,12 +7,6 @@ sendEmail = require('../lib/send-email')
 
 
 
-sendErrorSms  = ( error ) ->
-  for phoneNumber in ['+14807880022', '+16024608023']
-    sendSms phoneNumber, error, ( err, responseData ) ->
-
-
-
 exports.smsInitiatedAck = (req, res) ->
 
   res.sendStatus 200
@@ -58,6 +52,8 @@ exports.smsInitiatedOutcome = (req, res) ->
 
     OutboundCommand.findOne( gateway:req.body.macAddress ).sort('-_id').populate('gateway sensorHub').exec ( err, oc ) ->
 
+      return unless oc && oc.sensorHub && oc.gateway
+
       # TEST
       console.log '\n\n', "-= [smsInitiatedOutcome] #{oc.sensorHub._id} updateSuccess at #{new Date().toLocaleTimeString()} =-"
       console.log "deviceThresholds: ", oc.sensorHub.deviceThresholds
@@ -87,21 +83,9 @@ exports.networkHubEvent = (req, res) ->
 
   CustomerAccount.findOne( gateways:req.body.macAddress ).populate( 'user' ).exec ( err, account ) ->
 
-    body          = alertText.gatewayEvent( req.body.gatewayEventCode )
-
-    unless account
-      errorMessage  = "[HomeClub API]  networkHubEvent ERROR: account not found for MAC address #{req.body.macAddress}. #{body} email/sms NOT sent"
-
-      console.log "#{new Date().toLocaleString()} - #{errorMessage}"
-      console.log req.body
-
-      sendErrorSms errorMessage
-
-      return
-
-
     pastShipDate  = account.shipDate < Date.now
     email         = account.user.email
+    body          = alertText.gatewayEvent( req.body.gatewayEventCode )
 
     return unless pastShipDate
 
