@@ -6,6 +6,12 @@ sendSms   = require('../lib/send-sms')
 sendEmail = require('../lib/send-email')
 
 
+sendErrorSms  = ( error ) ->
+  console.log "#{new Date().toLocaleString()} - #{error}"
+  for phoneNumber in ['+14807880022', '+16024608023']
+    sendSms phoneNumber, error, ( err, responseData ) ->
+
+
 
 exports.smsInitiatedAck = (req, res) ->
 
@@ -21,6 +27,12 @@ exports.smsInitiatedAck = (req, res) ->
 
     # find most recent outboundCommand by network hub MAC
     OutboundCommand.findOne( gateway:req.body.macAddress ).sort('-_id').populate('gateway').exec ( err, oc ) ->
+
+      unless oc
+        errorMessage  = "[HomeClub API]  smsInitiatedAck ERROR: outboundCommand not found for MAC address #{req.body.macAddress}. #{status} NOT saved"
+        console.log req.body
+        sendErrorSms errorMessage
+        return
 
       # set deliveredAt
       oc.deliveredAt                      = Date.now()
@@ -52,7 +64,11 @@ exports.smsInitiatedOutcome = (req, res) ->
 
     OutboundCommand.findOne( gateway:req.body.macAddress ).sort('-_id').populate('gateway sensorHub').exec ( err, oc ) ->
 
-      return unless oc && oc.sensorHub && oc.gateway
+      unless oc && oc.sensorHub && oc.gateway
+        errorMessage  = "[HomeClub API]  smsInitiatedOutcome ERROR: outboundCommand not found for MAC address #{req.body.macAddress}. #{status} NOT saved"
+        console.log req.body
+        sendErrorSms errorMessage
+        return
 
       # TEST
       console.log '\n\n', "-= [smsInitiatedOutcome] #{oc.sensorHub._id} updateSuccess at #{new Date().toLocaleTimeString()} =-"
@@ -83,9 +99,16 @@ exports.networkHubEvent = (req, res) ->
 
   CustomerAccount.findOne( gateways:req.body.macAddress ).populate( 'user' ).exec ( err, account ) ->
 
+    body          = alertText.gatewayEvent( req.body.gatewayEventCode )
+
+    unless account
+      errorMessage  = "[HomeClub API]  networkHubEvent ERROR: account not found for MAC address #{req.body.macAddress}. #{body} email/sms NOT sent"
+      console.log req.body
+      sendErrorSms errorMessage
+      return
+
     pastShipDate  = account.shipDate < Date.now
     email         = account.user.email
-    body          = alertText.gatewayEvent( req.body.gatewayEventCode )
 
     return unless pastShipDate
 
