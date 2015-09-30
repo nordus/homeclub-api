@@ -16,7 +16,7 @@ module.exports  = ( req, res ) ->
         done( err )  if err
         networkHubs = _.flatten(_.pluck(accounts, 'gateways'))
         networkHubs.forEach ( networkHub ) ->
-          carriersByNetworkHub[networkHub] = carrier.name
+          carriersByNetworkHub[networkHub] = carrier.name.toLowerCase()
         done()
     , ( err ) ->
       res.json err || carriersByNetworkHub
