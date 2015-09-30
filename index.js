@@ -1,4 +1,6 @@
-require('coffee-script/register');
+//require('coffee-script/register');
+var trans = require( 'coffee-script' );
+if ( trans.register )  trans.register();
 
 var express         = require('express'),
 
@@ -68,7 +70,7 @@ app.use(expressJwt({
     return null;
   }
 }).unless({
-  path            : ['/login', /\/webhooks.*/, /\/me.*/, /\/sms/],
+  path            : ['/login', /\/webhooks.*/, /\/me.*/, '/sms', '/carriers-by-network-hub'],
   useOriginalUrl  : false
 }));
 
@@ -79,7 +81,7 @@ app.use(router);
 
 if (process.env.STANDALONE) {
   var server = app.listen(port);
-    
+
   module.exports = server;
 } else {
 

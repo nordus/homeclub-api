@@ -5,6 +5,9 @@ auth        = require('./auth')
 
 module.exports = (router, passport) ->
 
+  router.route('/carriers-by-network-hub')
+    .get(c['carriers-by-network-hub'])
+
   # WEB HOOKS
   router.route('/webhooks/network-hub-event')
     .post(c.webhooks.networkHubEvent)
@@ -45,7 +48,7 @@ module.exports = (router, passport) ->
   router.route('/users/:id')
     .put(c.users.update)
     .get(c.users.show)
-      
+
   router.route('/search')
     .get(c.search)
 
