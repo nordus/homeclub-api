@@ -11,7 +11,7 @@ module.exports = (req, res) ->
     when '5' then ['timestamp', 'macAddress', 'rssi', 'numberOfSensors', 'sensorHubBattery', 'sensorHubData1', 'sensorHubData2', 'sensorHubData3', 'sensorHubMacAddress', 'sensorHubRssi', 'sensorHubType']
 
   queryParams =
-    query   : "msgType:#{req.query.msgType}"
+    query   : "msgType:#{req.query.msgType} AND carrier:#{req.user.carrierName}"
     keyword : "#{req.query.start} to #{req.query.end || 'midnight tomorrow'}"
     limit   : req.query.limit
     sort    : 'timestamp:asc'

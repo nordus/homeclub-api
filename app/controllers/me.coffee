@@ -4,7 +4,19 @@ db  = require('../../config/db')
 
 
 sendAccountAndToken = ( req, res, account ) ->
-  token = jwt.sign req.user, 's3ss10ns3cr3t'
+
+  carrier       = account.carrier
+  homeClubAdmin = req.user.roles.homeClubAdmin
+
+  tokenPayload  =
+    _id         : req.user._id
+    carrierName : if homeClubAdmin then '*' else carrier.name.toLowerCase()
+    roles       : req.user.roles
+
+  unless homeClubAdmin
+    tokenPayload.carrierId  = carrier._id
+
+  token = jwt.sign tokenPayload, 's3ss10ns3cr3t'
 
   # delete Passport session - set req.user = null and delete req._passport.session.user.
   # all future requests must include token in req.Authorization
@@ -17,7 +29,7 @@ sendAccountAndToken = ( req, res, account ) ->
 
 
 exports.customerAccount = (req, res) ->
-  CustomerAccount.findOne(db.Types.ObjectId( req.user.roles.customerAccount )).populate('user gateways').exec (e, account) ->
+  CustomerAccount.findOne(db.Types.ObjectId( req.user.roles.customerAccount )).populate('user gateways carrier').exec (e, account) ->
     sendAccountAndToken( req, res, account )
 
 

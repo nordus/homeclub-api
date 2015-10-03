@@ -34,13 +34,6 @@ formatResponse = ( resp ) ->
 
 exports.pageViews = ( req, res ) ->
 
-  if req.query.carrier
-    opts  =
-      carrierId : req.query.carrier
-
-    pageViews opts, ( err, resp ) ->
-      res.json err or formatResponse( resp )
-
   if req.query.accountIds
     accountIds  = ensureArray( req.query.accountIds )
     out         = {}
@@ -56,24 +49,29 @@ exports.pageViews = ( req, res ) ->
     , ( err ) ->
       res.json err or out
 
-  else if req.user.roles.homeClubAdmin
-    pageViews {}, ( err, resp ) ->
+  else
+    opts  = {}
+
+    unless req.user.roles.homeClubAdmin
+      opts.carrierId  = req.user.carrierId
+
+    pageViews opts, ( err, resp ) ->
       res.json err or formatResponse( resp )
 
 
 setAccountIdsAndStartDates = ( req, res, next ) ->
-  if req.query.carrier
-    CustomerAccount.where( carrier: req.query.carrier, shipDate: $ne:null ).select( 'shipDate' ).lean().exec ( e, accts ) ->
-      accountIds  = _.pluck accts, '_id'
-      startDates  = accts.map ( acct ) -> acct.shipDate.toISOString().split( 'T' )[0]
-      req.accountIdsAndStartDates = _.zip accountIds, startDates
-      next()
-
-  else
+  if req.query.accountIds
     accountIds  = ensureArray( req.query.accountIds )
     startDates  = ensureArray( req.query.startDates )
     req.accountIdsAndStartDates = _.zip accountIds, startDates
     next()
+
+  else
+    CustomerAccount.where( carrier: req.user.carrierId, shipDate: $ne:null ).select( 'shipDate' ).lean().exec ( e, accts ) ->
+      accountIds  = _.pluck accts, '_id'
+      startDates  = accts.map ( acct ) -> acct.shipDate.toISOString().split( 'T' )[0]
+      req.accountIdsAndStartDates = _.zip accountIds, startDates
+      next()
 
 generateCsv = ( req, res, next ) ->
   out         = [
