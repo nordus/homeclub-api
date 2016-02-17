@@ -30,10 +30,12 @@ new Queue queueRef, ( data, progress, resolve, reject ) ->
 
   if sensorHubReading
     sensorHubRef =  latestRef.child "sensorHubs/#{sensorHubMacAddress}/"
-    sensorHubRef.update {sensorHubBattery, sensorHubRssi, sensorHubType, updateTime}
+    reading  = {sensorHubBattery, sensorHubRssi, sensorHubType, updateTime}
     ['sensorHubData1', 'sensorHubData2', 'sensorHubData3'].forEach ( k ) ->
       unless data[k] is undefined
-        sensorHubRef.child( k ).set data[k]
+        reading[ k ] = data[k]
+
+    sensorHubRef.update reading
 
 
   resolve data
