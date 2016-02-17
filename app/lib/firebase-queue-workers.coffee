@@ -31,7 +31,9 @@ new Queue queueRef, ( data, progress, resolve, reject ) ->
   if sensorHubReading
     sensorHubRef =  latestRef.child "sensorHubs/#{sensorHubMacAddress}/"
     reading  = {sensorHubBattery, sensorHubRssi, sensorHubType, updateTime}
-    ['sensorHubData1', 'sensorHubData2', 'sensorHubData3'].forEach ( k ) ->
+    # convert to Fahrenheit
+    reading.sensorHubData1 = ((data.sensorHubData1 * 9) / 5) + 32
+    ['sensorHubData2', 'sensorHubData3'].forEach ( k ) ->
       unless data[k] is undefined
         reading[ k ] = data[k]
 
