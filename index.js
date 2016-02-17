@@ -2,6 +2,9 @@
 var trans = require( 'coffee-script' );
 if ( trans.register )  trans.register();
 
+// start Firebase queue
+require( './app/lib/firebase-queue-workers' );
+
 var express         = require('express'),
 
     csv             = require('express-csv'),
