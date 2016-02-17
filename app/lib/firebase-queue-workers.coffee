@@ -33,7 +33,7 @@ new Queue queueRef, ( data, progress, resolve, reject ) ->
     sensorHubRef.update {sensorHubBattery, sensorHubRssi, sensorHubType, updateTime}
     ['sensorHubData1', 'sensorHubData2', 'sensorHubData3'].forEach ( k ) ->
       unless data[k] is undefined
-        sensorHubRef.child( k ).update data[k]
+        sensorHubRef.child( k ).set data[k]
 
 
   resolve data
