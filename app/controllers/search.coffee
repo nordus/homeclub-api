@@ -6,8 +6,8 @@ _ = require('lodash')
 module.exports = (req, res) ->
   fields = switch req.query.msgType
     when '0' then ['timestamp', 'macAddress', 'gatewayBattery', 'rssi']
-    when '2' then ['timestamp', 'macAddress', 'gatewayBattery', 'gatewayEventCode', 'rssi']
-    when '4' then ['timestamp', 'macAddress', 'sensorEventStart', 'sensorEventEnd', 'rssi', 'sensorHubBattery', 'sensorHubMacAddress', 'sensorHubRssi']
+    when '2' then ['updateTime', 'timestamp', 'macAddress', 'gatewayBattery', 'gatewayEventCode', 'rssi']
+    when '4' then ['updateTime', 'timestamp', 'macAddress', 'sensorEventStart', 'sensorEventEnd', 'rssi', 'sensorHubBattery', 'sensorHubMacAddress', 'sensorHubRssi']
     when '5' then ['timestamp', 'macAddress', 'rssi', 'numberOfSensors', 'sensorHubBattery', 'sensorHubData1', 'sensorHubData2', 'sensorHubData3', 'sensorHubMacAddress', 'sensorHubRssi', 'sensorHubType']
 
   queryParams =
