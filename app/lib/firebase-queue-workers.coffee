@@ -21,11 +21,13 @@ new Queue queueRef, ( data, progress, resolve, reject ) ->
 
   if networkHubAlert and powerSource in [1,2]
     latestRef.child( 'latestPowerStatus' ).set {battery, powerSource, updateTime}
+    latestRef.child( 'latestRssi' ).set {rssi, updateTime}
 
 
   if sensorHubAlert
     sensorHubAlertRef = latestRef.child "sensorHubs/#{sensorHubMacAddress}/latestAlert"
     sensorHubAlertRef.update {sensorEventEnd, sensorEventStart, sensorHubBattery, sensorHubRssi, updateTime}
+    latestRef.child( 'latestRssi' ).set {rssi, updateTime}
 
 
   if sensorHubReading
@@ -38,6 +40,7 @@ new Queue queueRef, ( data, progress, resolve, reject ) ->
         reading[ k ] = data[k]
 
     sensorHubRef.update reading
+    latestRef.child( 'latestRssi' ).set {rssi, updateTime}
 
 
   resolve data
