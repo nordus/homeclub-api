@@ -9,7 +9,7 @@ buildRequestOptions = (sensorHubMacAddress, msgType = 5, start = '30 days ago') 
     keyword : "#{start} to midnight tomorrow"
     limit   : 1
     sort    : 'timestamp:desc'
-    fields  : 'rssi, sensorEventStart, sensorEventEnd, sensorHubBattery, sensorHubData1, sensorHubData2, sensorHubData3, sensorHubMacAddress, sensorHubRssi, sensorHubType, timestamp'
+    fields  : 'rssi, sensorEventStart, sensorEventEnd, sensorHubBattery, sensorHubData1, sensorHubData2, sensorHubData3, sensorHubMacAddress, sensorHubRssi, sensorHubType, timestamp,updateTime'
 
   queryStr = querystring.stringify(queryParams)
 
