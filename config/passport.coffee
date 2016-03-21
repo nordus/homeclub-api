@@ -1,4 +1,4 @@
-{User} = require('./db').models
+{User} = require("#{__dirname}/db").models
 
 
 module.exports = (passport) ->
